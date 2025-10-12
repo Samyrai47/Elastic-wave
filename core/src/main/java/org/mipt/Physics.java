@@ -4,7 +4,7 @@ import java.util.List;
 import org.mipt.entity.Spring;
 import org.mipt.entity.Weight;
 
-/** Класс для пересчета физики. Template версия. */
+/** Класс для пересчета физики. */
 public class Physics {
   private static final float EPSILON = 0.0001F;
 
