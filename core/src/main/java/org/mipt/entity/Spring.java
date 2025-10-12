@@ -2,11 +2,21 @@ package org.mipt.entity;
 
 import com.badlogic.gdx.math.Vector2;
 
+/** Класс пружины */
 public class Spring {
+  /** Коэффициент упругости */
   private float k;
+
+  /** Число витков пружины */
   private int coils;
+
+  /** Ширина пружины. Требуется для отрисовки витков. */
   private float width;
+
+  /** Левая сторона крепления пружины */
   private Vector2 leftAnchor;
+
+  /** Правая сторона крепления пружины */
   private Vector2 rightAnchor;
 
   public Spring(float k, Vector2 leftAnchor, Vector2 rightAnchor, int coils, float width) {

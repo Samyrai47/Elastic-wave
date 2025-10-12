@@ -3,13 +3,24 @@ package org.mipt.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+/** Класс груза */
 public class Weight {
+  /** Масса груза */
   private float mass;
+
+  /** Список пружин, прикрепленных к грузу */
   private List<Spring> attachedSprings = new ArrayList<>();
 
+  /** Координата x левой нижней точки груза */
   private float x;
+
+  /** Координата y левой нижней точки груза */
   private float y;
+
+  /** Ширина груза */
   private float width;
+
+  /** Высота груза */
   private float height;
 
   public Weight(float mass, float x, float y, float width, float height) {
