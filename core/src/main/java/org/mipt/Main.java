@@ -29,28 +29,28 @@ public class Main extends ApplicationAdapter {
 
     Weight weight1 = new Weight(10, 400, 275, 50, 50);
     Weight weight2 = new Weight(10, 650, 275, 50, 50);
-    //Weight weight3 = new Weight(10, 900, 275, 50, 50);
+    // Weight weight3 = new Weight(10, 900, 275, 50, 50);
 
     weights.add(weight1);
     weights.add(weight2);
-    //weights.add(weight3);
+    // weights.add(weight3);
 
     Spring spring1 = new Spring(47, new Vector2(200, 300), new Vector2(400, 300), 20, 8.0f);
     Spring spring2 = new Spring(47, new Vector2(450, 300), new Vector2(650, 300), 20, 8.0f);
     Spring spring3 = new Spring(47, new Vector2(700, 300), new Vector2(900, 300), 20, 8.0f);
-    //Spring spring4 = new Spring(47, new Vector2(900, 300), new Vector2(1100, 300), 20, 8.0f);
+    // Spring spring4 = new Spring(47, new Vector2(900, 300), new Vector2(1100, 300), 20, 8.0f);
 
     springs.add(spring1);
     springs.add(spring2);
     springs.add(spring3);
-    //springs.add(spring4);
+    // springs.add(spring4);
 
     weight1.attachSprings(spring1);
     weight1.attachSprings(spring2);
     weight2.attachSprings(spring2);
     weight2.attachSprings(spring3);
-    //weight3.attachSprings(spring3);
-    //weight3.attachSprings(spring4);
+    // weight3.attachSprings(spring3);
+    // weight3.attachSprings(spring4);
   }
 
   @Override
@@ -58,9 +58,8 @@ public class Main extends ApplicationAdapter {
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
     handleInput();
     if (isForceApllied) {
-        physics.applyPhysics(weights, Gdx.graphics.getDeltaTime());
+      physics.applyPhysics(weights, Gdx.graphics.getDeltaTime());
     }
-
 
     // отрисовка стен
     shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
