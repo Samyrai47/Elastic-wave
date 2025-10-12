@@ -15,6 +15,8 @@ public class Main extends ApplicationAdapter {
   private Physics physics;
   private ShapeRenderer shapeRenderer;
 
+  public static final float PIXELS_PER_METER = 1000.0f;
+
   private boolean isForceApllied = false;
 
   private List<Weight> weights = new ArrayList<>();
@@ -27,23 +29,38 @@ public class Main extends ApplicationAdapter {
 
     Weight weight1 = new Weight(10, 400, 275, 50, 50);
     Weight weight2 = new Weight(10, 650, 275, 50, 50);
+    //Weight weight3 = new Weight(10, 900, 275, 50, 50);
 
     weights.add(weight1);
     weights.add(weight2);
+    //weights.add(weight3);
 
     Spring spring1 = new Spring(47, new Vector2(200, 300), new Vector2(400, 300), 20, 8.0f);
     Spring spring2 = new Spring(47, new Vector2(450, 300), new Vector2(650, 300), 20, 8.0f);
     Spring spring3 = new Spring(47, new Vector2(700, 300), new Vector2(900, 300), 20, 8.0f);
+    //Spring spring4 = new Spring(47, new Vector2(900, 300), new Vector2(1100, 300), 20, 8.0f);
 
     springs.add(spring1);
     springs.add(spring2);
     springs.add(spring3);
+    //springs.add(spring4);
+
+    weight1.attachSprings(spring1);
+    weight1.attachSprings(spring2);
+    weight2.attachSprings(spring2);
+    weight2.attachSprings(spring3);
+    //weight3.attachSprings(spring3);
+    //weight3.attachSprings(spring4);
   }
 
   @Override
   public void render() {
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
     handleInput();
+    if (isForceApllied) {
+        physics.applyPhysics(weights, Gdx.graphics.getDeltaTime());
+    }
+
 
     // отрисовка стен
     shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
@@ -120,7 +137,8 @@ public class Main extends ApplicationAdapter {
 
   private void handleInput() {
     if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-      isForceApllied = !isForceApllied;
+      isForceApllied = true;
+      physics.changeWeightX(weights.get(0), 20);
     }
   }
 

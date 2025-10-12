@@ -1,5 +1,7 @@
 package org.mipt.entity;
 
+import com.badlogic.gdx.math.Vector2;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +24,9 @@ public class Weight {
 
   /** Высота груза */
   private float height;
+
+  /** Скорость по X */
+  private float velocityX;
 
   public Weight(float mass, float x, float y, float width, float height) {
     this.mass = mass;
@@ -57,5 +62,37 @@ public class Weight {
 
   public float getHeight() {
     return height;
+  }
+
+  public float getLeftX(){
+      return x; // attachedSprings.get(0).getRightX
+  }
+
+  public float getRightX(){
+      return x + width; // attachedSprings.get(1).getLeftX
+  }
+
+  public Spring getLeftSpring(){
+      return attachedSprings.get(0);
+  }
+
+  public Spring getRightSpring(){
+      return attachedSprings.get(1);
+  }
+
+  public float getVelocityX() {
+    return velocityX;
+  }
+
+  public void setVelocityX(float velocityX) {
+    this.velocityX = velocityX;
+  }
+
+  public void setX(float x) {
+      this.x = x;
+      Spring leftSpring = attachedSprings.get(0);
+      Spring rightSpring = attachedSprings.get(1);
+      leftSpring.setRightAnchor(new Vector2(x, leftSpring.getY()));
+      rightSpring.setLeftAnchor(new Vector2(x + width, rightSpring.getY()));
   }
 }
