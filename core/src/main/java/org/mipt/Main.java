@@ -15,8 +15,6 @@ public class Main extends ApplicationAdapter {
   private Physics physics;
   private ShapeRenderer shapeRenderer;
 
-  private float time;
-
   private boolean isForceApllied = false;
 
   private List<Weight> weights = new ArrayList<>();
@@ -47,8 +45,6 @@ public class Main extends ApplicationAdapter {
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
     handleInput();
 
-    time += Gdx.graphics.getDeltaTime();
-
     // отрисовка стен
     shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
     shapeRenderer.line(200, 70, 200, 530);
@@ -75,6 +71,13 @@ public class Main extends ApplicationAdapter {
   //
   //    drawSpring(pointA, dynamicB, 20, 8f);
 
+  /**
+   * Метод для отрисовки пружин. Вычисляет ширину и высоту отдельного витка. Для каждого витка
+   * находит координату x и y относительно направления пружины. Вычисляет нормаль к направлению
+   * пружины. Смещает концы витка от центральной линии по нормали.
+   *
+   * @param spring пружина
+   */
   private void drawSpring(Spring spring) {
     shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 
