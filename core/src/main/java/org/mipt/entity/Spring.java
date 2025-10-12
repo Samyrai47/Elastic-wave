@@ -52,11 +52,11 @@ public class Spring {
   }
 
   public void setLeftAnchor(Vector2 leftAnchor) {
-      this.leftAnchor = leftAnchor;
+    this.leftAnchor = leftAnchor;
   }
 
   public void setRightAnchor(Vector2 rightAnchor) {
-      this.rightAnchor = rightAnchor;
+    this.rightAnchor = rightAnchor;
   }
 
   public float getLeftX() {
@@ -74,5 +74,4 @@ public class Spring {
   public float getLength() {
     return length;
   }
-
 }
