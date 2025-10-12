@@ -23,6 +23,7 @@ public class Physics {
    * @param deltaTime delta по времени
    */
   private static void calcPhysicsForWeight(Weight weight, float deltaTime) {
+    // TODO: добавить проверку на коллизии (или тут, или в weight)
     Spring leftSpring = weight.getLeftSpring();
     Spring rightSpring = weight.getRightSpring();
     float xPrev = leftSpring.getLeftX() / Main.PIXELS_PER_METER;
