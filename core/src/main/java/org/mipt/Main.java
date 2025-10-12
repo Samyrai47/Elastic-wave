@@ -17,7 +17,7 @@ public class Main extends ApplicationAdapter {
 
   public static final float PIXELS_PER_METER = 1000.0f;
 
-  private boolean isForceApllied = false;
+  private boolean isForceApplied = false;
 
   private List<Weight> weights = new ArrayList<>();
   private List<Spring> springs = new ArrayList<>();
@@ -57,7 +57,7 @@ public class Main extends ApplicationAdapter {
   public void render() {
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
     handleInput();
-    if (isForceApllied) {
+    if (isForceApplied) {
       physics.applyPhysics(weights, Gdx.graphics.getDeltaTime());
     }
 
@@ -75,17 +75,6 @@ public class Main extends ApplicationAdapter {
       drawWeight(weight);
     }
   }
-
-  //// Моделируем колебания
-  //    float currentLength = baseLength + physics.getOscillation(time);
-  //
-  //    // Конечная точка «вибрирует» вдоль линии
-  //    Vector2 dir = new Vector2(pointB).sub(pointA).nor();
-  //    Vector2 dynamicB = new Vector2(pointA).add(dir.scl(currentLength));
-  //
-  //    temp = dynamicB;
-  //
-  //    drawSpring(pointA, dynamicB, 20, 8f);
 
   /**
    * Метод для отрисовки пружин. Вычисляет ширину и высоту отдельного витка. Для каждого витка
@@ -136,7 +125,7 @@ public class Main extends ApplicationAdapter {
 
   private void handleInput() {
     if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-      isForceApllied = true;
+      isForceApplied = true;
       physics.changeWeightX(weights.get(0), 20);
     }
   }
