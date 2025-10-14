@@ -28,8 +28,7 @@ public class Spring {
     this.rightAnchor = rightAnchor;
     this.coils = coils;
     this.width = width;
-    // TODO: поменять на dist от векторов
-    this.length = rightAnchor.x - leftAnchor.x;
+    this.length = rightAnchor.dst(leftAnchor);
   }
 
   public float getK() {
