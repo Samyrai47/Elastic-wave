@@ -63,14 +63,6 @@ public class Weight {
     return height;
   }
 
-  public float getLeftX() {
-    return x; // attachedSprings.get(0).getRightX
-  }
-
-  public float getRightX() {
-    return x + width; // attachedSprings.get(1).getLeftX
-  }
-
   public Spring getLeftSpring() {
     return attachedSprings.get(0);
   }
@@ -90,8 +82,8 @@ public class Weight {
   public void setX(float x) {
     Spring leftSpring = attachedSprings.get(0);
     Spring rightSpring = attachedSprings.get(1);
-    if (x < leftSpring.getLeftX() || x + width > rightSpring.getRightX()){
-        return;
+    if (x < leftSpring.getLeftX() || x + width > rightSpring.getRightX()) {
+      return;
     }
     this.x = x;
     leftSpring.setRightAnchor(new Vector2(x, leftSpring.getY()));
