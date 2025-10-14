@@ -62,9 +62,10 @@ public class Main extends ApplicationAdapter {
     }
 
     // отрисовка стен
+    Spring lastSpring = springs.get(springs.size() - 1);
     shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
     shapeRenderer.line(200, 70, 200, 530);
-    shapeRenderer.line(900, 70, 900, 530);
+    shapeRenderer.line(lastSpring.getRightX(), 70, lastSpring.getRightX(), 530);
     shapeRenderer.end();
 
     for (Spring spring : springs) {
@@ -126,7 +127,7 @@ public class Main extends ApplicationAdapter {
   private void handleInput() {
     if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
       isForceApplied = true;
-      physics.changeWeightX(weights.get(0), 20);
+      physics.changeFirstWeightX(weights, 20);
     }
   }
 
