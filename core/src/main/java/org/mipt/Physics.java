@@ -10,6 +10,12 @@ public class Physics {
 
   public Physics() {}
 
+  /**
+   * Решаем для каждого груза диф. уравнение каждое dt времени,
+   * получаем для каждого груза текущую позицию
+   * @param weights грузы
+   * @param deltaTime dt
+   * */
   public void applyPhysics(List<Weight> weights, float deltaTime) {
     for (Weight weight : weights) {
       calcPhysicsForWeight(weight, deltaTime);
