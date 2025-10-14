@@ -88,9 +88,12 @@ public class Weight {
   }
 
   public void setX(float x) {
-    this.x = x;
     Spring leftSpring = attachedSprings.get(0);
     Spring rightSpring = attachedSprings.get(1);
+    if (x < leftSpring.getLeftX() || x + width > rightSpring.getRightX()){
+        return;
+    }
+    this.x = x;
     leftSpring.setRightAnchor(new Vector2(x, leftSpring.getY()));
     rightSpring.setLeftAnchor(new Vector2(x + width, rightSpring.getY()));
   }

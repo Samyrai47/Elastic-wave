@@ -18,7 +18,11 @@ public class Physics {
 
   /**
    * Решение диф. уравнения для груза
-   *
+   * m_i * x_i'' = k_(i - 1) * (x_(i - 1) - x_i + L_(i - 1))
+   * + k_i * (x_(i + 1) - x_i - L_i - width)
+   * k - жесткость пружины
+   * L - начальная длина пружины
+   * width - ширина груза
    * @param weight груз
    * @param deltaTime delta по времени
    */
@@ -44,17 +48,20 @@ public class Physics {
     float newVelocityX =
         (float) (-a * w * Math.sin(w * deltaTime) + b * w * Math.cos(w * deltaTime));
 
-    weight.setX(newX * Main.PIXELS_PER_METER);
     weight.setVelocityX(newVelocityX);
+    weight.setX(newX * Main.PIXELS_PER_METER);
   }
 
   /**
-   * Двигаем груз по X
+   * Двигаем первый груз по X
    *
-   * @param weight груз
+   * @param weights груз
    * @param dx сдвиг
    */
-  public void changeWeightX(Weight weight, float dx) {
-    weight.setX(weight.getX() + dx);
+  public void changeFirstWeightX(List<Weight> weights, float dx) {
+      Weight firstWeight = weights.get(0);
+      if (firstWeight.getRightX() + dx < weights.get(1).getLeftX()) {
+          firstWeight.setX(firstWeight.getX() + dx);
+      }
   }
 }
