@@ -111,14 +111,14 @@ public class Physics {
       float prevWidth = weights.get(index - 1).getWidth();
       prevRightX = prevWeightX + prevWidth;
     } else {
-      prevRightX = weights.getFirst().getLeftSpring().getLeftX(); // левая стенка
+      prevRightX = weights.get(0).getLeftSpring().getLeftX(); // левая стенка
     }
 
     float nextLeftX;
     if (index < state.length / 2 - 1) {
       nextLeftX = state[index + 1];
     } else {
-      nextLeftX = weights.getLast().getRightSpring().getRightX(); // правая стенка
+      nextLeftX = weights.get(weights.size() - 1).getRightSpring().getRightX(); // правая стенка
     }
 
     return (leftSpringK * (prevRightX - currWeightX + leftSpringLen)
