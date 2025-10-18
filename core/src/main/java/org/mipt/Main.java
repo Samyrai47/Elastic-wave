@@ -41,7 +41,6 @@ public class Main extends ApplicationAdapter {
     shapeRenderer = new ShapeRenderer();
     physics = new Physics();
 
-    // TODO: переделать этот позор в создание через запросы (или через цикл)
     float mass = 10;
     float leftX = 200;
     float length = 200;
@@ -49,19 +48,26 @@ public class Main extends ApplicationAdapter {
     float k = 47;
     float SpringY = 300;
     float weightY = 275;
-    for (int i = 0; i < 10000; i++) {
-        Spring spring = new Spring(k, new Vector2(leftX, SpringY), new Vector2(leftX + length, SpringY), 20, 8.0f);
+    float wallHeight = 460;
+    float weightHeight = 50;
+    for (int i = 0; i < 5; i++) {
+        Spring spring;
+        if (i == 0) {
+            spring = new Spring(k, new Vector2(leftX, SpringY), new Vector2(leftX + length, SpringY), 20, 8.0f, wallHeight, weightHeight);
+        } else {
+            spring = new Spring(k, new Vector2(leftX, SpringY), new Vector2(leftX + length, SpringY), 20, 8.0f, weightHeight, weightHeight);
+        }
         springs.add(spring);
         if (i != 0){
-            weights.get(weights.size() - 1).attachSprings(spring);
+            weights.get(weights.size() - 1).attachHorizontalSprings(spring);
         }
         Weight weight = new Weight(mass, leftX + length, weightY, width, 50);
-        weight.attachSprings(spring);
+        weight.attachHorizontalSprings(spring);
         weights.add(weight);
         leftX = leftX + length + width;
     }
-    Spring lastSpring = new Spring(k, new Vector2(leftX, SpringY),  new Vector2(leftX + length, SpringY), 20, 8.0f);
-    weights.get(weights.size() - 1).attachSprings(lastSpring);
+    Spring lastSpring = new Spring(k, new Vector2(leftX, SpringY),  new Vector2(leftX + length, SpringY), 20, 8.0f, weightHeight, wallHeight);
+    weights.get(weights.size() - 1).attachHorizontalSprings(lastSpring);
     springs.add(lastSpring);
 
       /*Weight weight1 = new Weight(10, 400, 275, 50, 50);
@@ -130,36 +136,36 @@ public class Main extends ApplicationAdapter {
       springs.add(spring15);
       springs.add(spring16);
 
-      weight1.attachSprings(spring1);
-      weight1.attachSprings(spring2);
-      weight2.attachSprings(spring2);
-      weight2.attachSprings(spring3);
-      weight3.attachSprings(spring3);
-      weight3.attachSprings(spring4);
-      weight4.attachSprings(spring4);
-      weight4.attachSprings(spring5);
-      weight5.attachSprings(spring5);
-      weight5.attachSprings(spring6);
-      weight6.attachSprings(spring6);
-      weight6.attachSprings(spring7);
-      weight7.attachSprings(spring7);
-      weight7.attachSprings(spring8);
-      weight8.attachSprings(spring8);
-      weight8.attachSprings(spring9);
-      weight9.attachSprings(spring9);
-      weight9.attachSprings(spring10);
-      weight10.attachSprings(spring10);
-      weight10.attachSprings(spring11);
-      weight11.attachSprings(spring11);
-      weight11.attachSprings(spring12);
-      weight12.attachSprings(spring12);
-      weight12.attachSprings(spring13);
-      weight13.attachSprings(spring13);
-      weight13.attachSprings(spring14);
-      weight14.attachSprings(spring14);
-      weight14.attachSprings(spring15);
-      weight15.attachSprings(spring15);
-      weight15.attachSprings(spring16);*/
+      weight1.attachHorizontalSprings(spring1);
+      weight1.attachHorizontalSprings(spring2);
+      weight2.attachHorizontalSprings(spring2);
+      weight2.attachHorizontalSprings(spring3);
+      weight3.attachHorizontalSprings(spring3);
+      weight3.attachHorizontalSprings(spring4);
+      weight4.attachHorizontalSprings(spring4);
+      weight4.attachHorizontalSprings(spring5);
+      weight5.attachHorizontalSprings(spring5);
+      weight5.attachHorizontalSprings(spring6);
+      weight6.attachHorizontalSprings(spring6);
+      weight6.attachHorizontalSprings(spring7);
+      weight7.attachHorizontalSprings(spring7);
+      weight7.attachHorizontalSprings(spring8);
+      weight8.attachHorizontalSprings(spring8);
+      weight8.attachHorizontalSprings(spring9);
+      weight9.attachHorizontalSprings(spring9);
+      weight9.attachHorizontalSprings(spring10);
+      weight10.attachHorizontalSprings(spring10);
+      weight10.attachHorizontalSprings(spring11);
+      weight11.attachHorizontalSprings(spring11);
+      weight11.attachHorizontalSprings(spring12);
+      weight12.attachHorizontalSprings(spring12);
+      weight12.attachHorizontalSprings(spring13);
+      weight13.attachHorizontalSprings(spring13);
+      weight13.attachHorizontalSprings(spring14);
+      weight14.attachHorizontalSprings(spring14);
+      weight14.attachHorizontalSprings(spring15);
+      weight15.attachHorizontalSprings(spring15);
+      weight15.attachHorizontalSprings(spring16);*/
 
     Gdx.input.setInputProcessor(
         new InputAdapter() {
@@ -204,7 +210,7 @@ public class Main extends ApplicationAdapter {
     // отрисовка стен
     Spring lastSpring = springs.get(springs.size() - 1);
     shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-    shapeRenderer.line(200, 70, 200, 530);
+    shapeRenderer.line(200, 70, 200, 70 + springs.get(0).getLeftHeight());
     shapeRenderer.line(lastSpring.getRightX(), 70, lastSpring.getRightX(), 530);
     shapeRenderer.end();
 
@@ -268,7 +274,7 @@ public class Main extends ApplicationAdapter {
 
   private void handleInput() {
     if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-      physics.pushFirstWeight(weights, 400f);
+      physics.pushFirstWeight(weights, 400f, 0);
     }
   }
 
