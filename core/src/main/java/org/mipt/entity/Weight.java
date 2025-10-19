@@ -44,7 +44,7 @@ public class Weight {
   }
 
   public void attachVerticalSprings(Spring spring) {
-      verticalSprings.add(spring);
+    verticalSprings.add(spring);
   }
 
   public float getMass() {
@@ -56,7 +56,7 @@ public class Weight {
   }
 
   public List<Spring> getVerticalSprings() {
-      return verticalSprings;
+    return verticalSprings;
   }
 
   public float getX() {
@@ -75,28 +75,28 @@ public class Weight {
     return height;
   }
 
-    public Spring getLeftSpring() {
-        return horizontalSprings.get(0);
-    }
+  public Spring getLeftSpring() {
+    return horizontalSprings.get(0);
+  }
 
-    public Spring getRightSpring() {
-        return horizontalSprings.get(1);
-    }
+  public Spring getRightSpring() {
+    return horizontalSprings.get(1);
+  }
 
-    public Spring getLowerSpring() {
-        return verticalSprings.get(0);
-    }
+  public Spring getLowerSpring() {
+    return verticalSprings.get(0);
+  }
 
-    public Spring getUpperSpring() {
-        return verticalSprings.get(1);
-    }
+  public Spring getUpperSpring() {
+    return verticalSprings.get(1);
+  }
 
   public float getVelocityX() {
     return velocity.x;
   }
 
   public float getVelocityY() {
-      return velocity.y;
+    return velocity.y;
   }
 
   public void setVelocityX(float velocityX) {
@@ -104,24 +104,22 @@ public class Weight {
   }
 
   public void setVelocityY(float velocityY) {
-      this.velocity.y = velocityY;
+    this.velocity.y = velocityY;
   }
 
-    public void setX(float x) {
-        Spring leftSpring = horizontalSprings.get(0);
-        Spring rightSpring = horizontalSprings.get(1);
-        this.x = x;
-        leftSpring.setRightAnchor(new Vector2(x, leftSpring.getRightY()));
-        rightSpring.setLeftAnchor(new Vector2(x + width, rightSpring.getLeftY()));
-    }
+  public void setX(float x) {
+    Spring leftSpring = horizontalSprings.get(0);
+    Spring rightSpring = horizontalSprings.get(1);
+    this.x = x;
+    leftSpring.setRightAnchor(new Vector2(x, leftSpring.getRightY()));
+    rightSpring.setLeftAnchor(new Vector2(x + width, rightSpring.getLeftY()));
+  }
 
-    public void setY(float y) {
-        Spring leftSpring = horizontalSprings.get(0);
-        Spring rightSpring = horizontalSprings.get(1);
-        this.y = y;
-        leftSpring.setRightAnchor(new Vector2(leftSpring.getRightX(), y + height / 2));
-        rightSpring.setLeftAnchor(new Vector2(rightSpring.getLeftX(), y + height / 2));
-    }
-
-
+  public void setY(float y) {
+    Spring leftSpring = horizontalSprings.get(0);
+    Spring rightSpring = horizontalSprings.get(1);
+    this.y = y;
+    leftSpring.setRightAnchor(new Vector2(leftSpring.getRightX(), y + height / 2));
+    rightSpring.setLeftAnchor(new Vector2(rightSpring.getLeftX(), y + height / 2));
+  }
 }
