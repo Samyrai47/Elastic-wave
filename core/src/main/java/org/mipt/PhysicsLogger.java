@@ -6,21 +6,21 @@ import java.util.List;
 import org.mipt.entity.Spring;
 import org.mipt.entity.Weight;
 
-/** Логер класса Physics. Собирает статистику (например положения) в csv файл. */
+/** Логер класса Physics. Собирает статистику (например положения) в csv файлы. */
 public class PhysicsLogger {
 
-  private FileWriter xWriter;
-  private FileWriter yWriter;
-  private FileWriter energyWriter;
+  private final FileWriter xWriter;
+  private final FileWriter yWriter;
+  private final FileWriter energyWriter;
 
-  public PhysicsLogger(String filename, int WeightsNumber) throws IOException {
+  public PhysicsLogger(String filename, int weightsNumber) throws IOException {
     xWriter = new FileWriter(filename + "_xPos.csv");
     yWriter = new FileWriter(filename + "_yPos.csv");
     energyWriter = new FileWriter(filename + "_energy.csv");
     xWriter.write("time");
     yWriter.write("time");
     energyWriter.write("time,energy\n");
-    for (int i = 0; i < WeightsNumber; i++) {
+    for (int i = 0; i < weightsNumber; i++) {
       xWriter.write(",x" + i);
       yWriter.write(",y" + i);
     }
