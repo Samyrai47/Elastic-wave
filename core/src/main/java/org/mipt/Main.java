@@ -218,7 +218,7 @@ public class Main extends ApplicationAdapter {
 
   private void handleInput() {
     if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-      physics.pushFirstWeight(weights, 1000f, 0f);
+      physics.pushFirstWeight(weights, 0f, 1000f);
     }
   }
 
