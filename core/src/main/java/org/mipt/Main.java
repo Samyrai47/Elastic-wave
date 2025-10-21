@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.FillViewport;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.mipt.entity.Spring;
@@ -18,6 +19,7 @@ import org.mipt.entity.Weight;
 
 public class Main extends ApplicationAdapter {
   private Physics physics;
+  PhysicsLogger logger;
   private ShapeRenderer shapeRenderer;
 
   private FillViewport viewport;
@@ -26,140 +28,80 @@ public class Main extends ApplicationAdapter {
   public static final float PIXELS_PER_METER = 1000.0f;
   private static final float WORLD_HEIGHT = 600;
   private static final float WORLD_WIDTH = 1000;
-  private static final float FIXED_TIME_STEP = 0.001f;
+  private static final float FIXED_TIME_STEP = 0.00025f;
   private float accumulator = 0f;
+  private static float simTime = 0f;
 
   private List<Weight> weights = new ArrayList<>();
   private List<Spring> springs = new ArrayList<>();
+  private static final int WEIGHTS_NUMBER = 30;
 
   @Override
   public void create() {
     camera = new OrthographicCamera();
     viewport = new FillViewport(WORLD_WIDTH, WORLD_HEIGHT, camera);
-    camera.position.set(WORLD_WIDTH / 2f + 2500, WORLD_HEIGHT / 2f, 0);
+    camera.position.set(WORLD_WIDTH / 2f, WORLD_HEIGHT / 2f, 0);
 
     shapeRenderer = new ShapeRenderer();
     physics = new Physics();
+    try {
+      logger = new PhysicsLogger("dataset", WEIGHTS_NUMBER);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
 
-    // TODO: переделать этот позор в создание через запросы (или через цикл)
-    float mass = 10;
+    float mass = 0.25f;
     float leftX = 200;
     float length = 200;
     float width = 50;
     float k = 47;
     float SpringY = 300;
     float weightY = 275;
-    for (int i = 0; i < 10000; i++) {
-        Spring spring = new Spring(k, new Vector2(leftX, SpringY), new Vector2(leftX + length, SpringY), 20, 8.0f);
-        springs.add(spring);
-        if (i != 0){
-            weights.get(weights.size() - 1).attachSprings(spring);
-        }
-        Weight weight = new Weight(mass, leftX + length, weightY, width, 50);
-        weight.attachSprings(spring);
-        weights.add(weight);
-        leftX = leftX + length + width;
+    float wallHeight = 460;
+    float weightHeight = 50;
+    for (int i = 0; i < WEIGHTS_NUMBER; i++) {
+      Spring spring;
+      if (i == 0) {
+        spring =
+            new Spring(
+                k,
+                new Vector2(leftX, SpringY),
+                new Vector2(leftX + length, SpringY),
+                20,
+                8.0f,
+                wallHeight,
+                weightHeight);
+      } else {
+        spring =
+            new Spring(
+                k,
+                new Vector2(leftX, SpringY),
+                new Vector2(leftX + length, SpringY),
+                20,
+                8.0f,
+                weightHeight,
+                weightHeight);
+      }
+      springs.add(spring);
+      if (i != 0) {
+        weights.get(weights.size() - 1).attachHorizontalSprings(spring);
+      }
+      Weight weight = new Weight(mass, leftX + length, weightY, width, 50);
+      weight.attachHorizontalSprings(spring);
+      weights.add(weight);
+      leftX = leftX + length + width;
     }
-    Spring lastSpring = new Spring(k, new Vector2(leftX, SpringY),  new Vector2(leftX + length, SpringY), 20, 8.0f);
-    weights.get(weights.size() - 1).attachSprings(lastSpring);
+    Spring lastSpring =
+        new Spring(
+            k,
+            new Vector2(leftX, SpringY),
+            new Vector2(leftX + length, SpringY),
+            20,
+            8.0f,
+            weightHeight,
+            wallHeight);
+    weights.get(weights.size() - 1).attachHorizontalSprings(lastSpring);
     springs.add(lastSpring);
-
-      /*Weight weight1 = new Weight(10, 400, 275, 50, 50);
-      Weight weight2 = new Weight(10, 650, 275, 50, 50);
-      Weight weight3 = new Weight(10, 900, 275, 50, 50);
-      Weight weight4 = new Weight(10, 1150, 275, 50, 50);
-      Weight weight5 = new Weight(10, 1400, 275, 50, 50);
-      Weight weight6 = new Weight(10, 1650, 275, 50, 50);
-      Weight weight7 = new Weight(10, 1900, 275, 50, 50);
-      Weight weight8 = new Weight(10, 2150, 275, 50, 50);
-      Weight weight9 = new Weight(10, 2400, 275, 50, 50);
-      Weight weight10 = new Weight(10, 2650, 275, 50, 50);
-      Weight weight11 = new Weight(10, 2900, 275, 50, 50);
-      Weight weight12 = new Weight(10, 3150, 275, 50, 50);
-      Weight weight13 = new Weight(10, 3400, 275, 50, 50);
-      Weight weight14 = new Weight(10, 3650, 275, 50, 50);
-      Weight weight15 = new Weight(10, 3900, 275, 50, 50);
-
-      weights.add(weight1);
-      weights.add(weight2);
-      weights.add(weight3);
-      weights.add(weight4);
-      weights.add(weight5);
-      weights.add(weight6);
-      weights.add(weight7);
-      weights.add(weight8);
-      weights.add(weight9);
-      weights.add(weight10);
-      weights.add(weight11);
-      weights.add(weight12);
-      weights.add(weight13);
-      weights.add(weight14);
-      weights.add(weight15);
-
-      Spring spring1 = new Spring(47, new Vector2(200, 300), new Vector2(400, 300), 20, 8.0f);
-      Spring spring2 = new Spring(47, new Vector2(450, 300), new Vector2(650, 300), 20, 8.0f);
-      Spring spring3 = new Spring(47, new Vector2(700, 300), new Vector2(900, 300), 20, 8.0f);
-      Spring spring4 = new Spring(47, new Vector2(950, 300), new Vector2(1150, 300), 20, 8.0f);
-      Spring spring5 = new Spring(47, new Vector2(1200, 300), new Vector2(1400, 300), 20, 8.0f);
-      Spring spring6 = new Spring(47, new Vector2(1450, 300), new Vector2(1650, 300), 20, 8.0f);
-      Spring spring7 = new Spring(47, new Vector2(1700, 300), new Vector2(1900, 300), 20, 8.0f);
-      Spring spring8 = new Spring(47, new Vector2(1950, 300), new Vector2(2150, 300), 20, 8.0f);
-      Spring spring9 = new Spring(47, new Vector2(2200, 300), new Vector2(2400, 300), 20, 8.0f);
-      Spring spring10 = new Spring(47, new Vector2(2450, 300), new Vector2(2650, 300), 20, 8.0f);
-      Spring spring11 = new Spring(47, new Vector2(2700, 300), new Vector2(2900, 300), 20, 8.0f);
-      Spring spring12 = new Spring(47, new Vector2(2950, 300), new Vector2(3150, 300), 20, 8.0f);
-      Spring spring13 = new Spring(47, new Vector2(3200, 300), new Vector2(3400, 300), 20, 8.0f);
-      Spring spring14 = new Spring(47, new Vector2(3450, 300), new Vector2(3650, 300), 20, 8.0f);
-      Spring spring15 = new Spring(47, new Vector2(3700, 300), new Vector2(3900, 300), 20, 8.0f);
-      Spring spring16 = new Spring(47, new Vector2(3950, 300), new Vector2(4150, 300), 20, 8.0f);
-
-      springs.add(spring1);
-      springs.add(spring2);
-      springs.add(spring3);
-      springs.add(spring4);
-      springs.add(spring5);
-      springs.add(spring6);
-      springs.add(spring7);
-      springs.add(spring8);
-      springs.add(spring9);
-      springs.add(spring10);
-      springs.add(spring11);
-      springs.add(spring12);
-      springs.add(spring13);
-      springs.add(spring14);
-      springs.add(spring15);
-      springs.add(spring16);
-
-      weight1.attachSprings(spring1);
-      weight1.attachSprings(spring2);
-      weight2.attachSprings(spring2);
-      weight2.attachSprings(spring3);
-      weight3.attachSprings(spring3);
-      weight3.attachSprings(spring4);
-      weight4.attachSprings(spring4);
-      weight4.attachSprings(spring5);
-      weight5.attachSprings(spring5);
-      weight5.attachSprings(spring6);
-      weight6.attachSprings(spring6);
-      weight6.attachSprings(spring7);
-      weight7.attachSprings(spring7);
-      weight7.attachSprings(spring8);
-      weight8.attachSprings(spring8);
-      weight8.attachSprings(spring9);
-      weight9.attachSprings(spring9);
-      weight9.attachSprings(spring10);
-      weight10.attachSprings(spring10);
-      weight10.attachSprings(spring11);
-      weight11.attachSprings(spring11);
-      weight11.attachSprings(spring12);
-      weight12.attachSprings(spring12);
-      weight12.attachSprings(spring13);
-      weight13.attachSprings(spring13);
-      weight13.attachSprings(spring14);
-      weight14.attachSprings(spring14);
-      weight14.attachSprings(spring15);
-      weight15.attachSprings(spring15);
-      weight15.attachSprings(spring16);*/
 
     Gdx.input.setInputProcessor(
         new InputAdapter() {
@@ -198,13 +140,21 @@ public class Main extends ApplicationAdapter {
     accumulator += frameTime;
     while (accumulator >= FIXED_TIME_STEP) {
       physics.applyPhysics(weights, FIXED_TIME_STEP);
+      simTime += FIXED_TIME_STEP;
+      try {
+        logger.logX(weights, simTime);
+        logger.logY(weights, simTime);
+        logger.logEnergyTime(weights.get(weights.size() - 1).getRightSpring(), simTime);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
       accumulator -= FIXED_TIME_STEP;
     }
 
     // отрисовка стен
     Spring lastSpring = springs.get(springs.size() - 1);
     shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-    shapeRenderer.line(200, 70, 200, 530);
+    shapeRenderer.line(200, 70, 200, 70 + springs.get(0).getLeftHeight());
     shapeRenderer.line(lastSpring.getRightX(), 70, lastSpring.getRightX(), 530);
     shapeRenderer.end();
 
@@ -268,7 +218,7 @@ public class Main extends ApplicationAdapter {
 
   private void handleInput() {
     if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-      physics.pushFirstWeight(weights, 400f);
+      physics.pushFirstWeight(weights, 0f, 1000f);
     }
   }
 
@@ -280,5 +230,10 @@ public class Main extends ApplicationAdapter {
   @Override
   public void dispose() {
     shapeRenderer.dispose();
+    try {
+      logger.close();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 }
