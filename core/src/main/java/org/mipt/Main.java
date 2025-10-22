@@ -32,8 +32,8 @@ public class Main extends ApplicationAdapter {
   private float accumulator = 0f;
   private static float simTime = 0f;
 
-  private List<Weight> weights = new ArrayList<>();
-  private List<Spring> springs = new ArrayList<>();
+  private final List<Weight> weights = new ArrayList<>();
+  private final List<Spring> springs = new ArrayList<>();
   private static final int WEIGHTS_NUMBER = 30;
 
   @Override
