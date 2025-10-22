@@ -158,13 +158,9 @@ public class Main extends ApplicationAdapter {
     shapeRenderer.line(lastSpring.getRightX(), 70, lastSpring.getRightX(), 530);
     shapeRenderer.end();
 
-    for (Spring spring : springs) {
-      drawSpring(spring);
-    }
+    drawSprings(springs);
 
-    for (Weight weight : weights) {
-      drawWeight(weight);
-    }
+    drawWeights(weights);
   }
 
   /**
@@ -172,46 +168,50 @@ public class Main extends ApplicationAdapter {
    * находит координату x и y относительно направления пружины. Вычисляет нормаль к направлению
    * пружины. Смещает концы витка от центральной линии по нормали.
    *
-   * @param spring пружина
+   * @param springs список пружин
    */
-  private void drawSpring(Spring spring) {
+  private void drawSprings(List<Spring> springs) {
     shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
     shapeRenderer.setColor(Color.WHITE);
 
-    float dx = (spring.getRightAnchor().x - spring.getLeftAnchor().x) / spring.getCoils();
-    float dy = (spring.getRightAnchor().y - spring.getLeftAnchor().y) / spring.getCoils();
+    for (Spring spring : springs) {
+      float dx = (spring.getRightAnchor().x - spring.getLeftAnchor().x) / spring.getCoils();
+      float dy = (spring.getRightAnchor().y - spring.getLeftAnchor().y) / spring.getCoils();
 
-    for (int i = 0; i < spring.getCoils(); i++) {
-      float sign = (i % 2 == 0) ? 1 : -1;
+      for (int i = 0; i < spring.getCoils(); i++) {
+        float sign = (i % 2 == 0) ? 1 : -1;
 
-      float x1 = spring.getLeftAnchor().x + dx * i;
-      float y1 = spring.getLeftAnchor().y + dy * i;
-      float x2 = spring.getLeftAnchor().x + dx * (i + 1);
-      float y2 = spring.getLeftAnchor().y + dy * (i + 1);
+        float x1 = spring.getLeftAnchor().x + dx * i;
+        float y1 = spring.getLeftAnchor().y + dy * i;
+        float x2 = spring.getLeftAnchor().x + dx * (i + 1);
+        float y2 = spring.getLeftAnchor().y + dy * (i + 1);
 
-      // нормаль
-      float nx = -dy;
-      float ny = dx;
-      float len = (float) Math.sqrt(nx * nx + ny * ny);
-      nx /= len;
-      ny /= len;
+        // нормаль
+        float nx = -dy;
+        float ny = dx;
+        float len = (float) Math.sqrt(nx * nx + ny * ny);
+        nx /= len;
+        ny /= len;
 
-      x1 += nx * spring.getWidth() * sign;
-      y1 += ny * spring.getWidth() * sign;
-      x2 += nx * spring.getWidth() * -sign;
-      y2 += ny * spring.getWidth() * -sign;
+        x1 += nx * spring.getWidth() * sign;
+        y1 += ny * spring.getWidth() * sign;
+        x2 += nx * spring.getWidth() * -sign;
+        y2 += ny * spring.getWidth() * -sign;
 
-      shapeRenderer.line(x1, y1, x2, y2);
+        shapeRenderer.line(x1, y1, x2, y2);
+      }
     }
 
     shapeRenderer.end();
   }
 
-  private void drawWeight(Weight weight) {
+  private void drawWeights(List<Weight> weights) {
     shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
     shapeRenderer.setColor(Color.DARK_GRAY);
 
-    shapeRenderer.rect(weight.getX(), weight.getY(), weight.getWidth(), weight.getHeight());
+    for (Weight weight : weights) {
+      shapeRenderer.rect(weight.getX(), weight.getY(), weight.getWidth(), weight.getHeight());
+    }
 
     shapeRenderer.end();
   }
