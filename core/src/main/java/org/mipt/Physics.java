@@ -7,10 +7,20 @@ import org.mipt.entity.Weight;
 /** Класс для пересчета физики. */
 public class Physics {
   private static final float EPSILON = 0.0001F;
+  private static float leftWallX;
+  private static float rightWallX;
 
   public Physics() {}
 
-  /**
+    public void setLeftWallX(float leftWallX) {
+        Physics.leftWallX = leftWallX;
+    }
+
+    public void setRightWallX(float rightWallX) {
+      Physics.rightWallX = rightWallX;
+    }
+
+    /**
    * Просчитывает физику для модели
    *
    * @param weights грузы
@@ -123,6 +133,16 @@ public class Physics {
       force.add(rightForce);
     }
 
+    if (weight.getLowerSpring() != null) {
+        Vector2 lowerForce = weight.getLowerSpring().getLowerForce();
+        force.add(lowerForce);
+    }
+
+    if (weight.getUpperSpring() != null) {
+        Vector2 upperForce = weight.getUpperSpring().getUpperForce();
+        force.add(upperForce);
+    }
+
     //    float damping = 0.05f;
     //    Vector2 velocity = new Vector2(weight.getVelocityX(), weight.getVelocityY());
     //    force.sub(velocity.scl(damping));
@@ -186,15 +206,24 @@ public class Physics {
     }
 
     // TODO переделать обработку коллизий со стенками, из-за непонятного поведения груза
-    if (newX[0] < weights.get(0).getLeftSpring().getLeftX()) {
+    for (int i = 0; i < n; i++) {
+        if (newX[i] < leftWallX){
+            newVx[i] = -newVx[i];
+        }
+
+        if (newX[i] + weights.get(i).getWidth() > rightWallX){
+            newVx[i] = -newVx[i];
+        }
+    }
+    /*if (newX[0] < leftWallX) {
       // newX[0] = weights.get(0).getX();
       newVx[0] = -newVx[0];
     }
     if (newX[n - 1] + weights.get(n - 1).getWidth()
-        > weights.get(n - 1).getRightSpring().getRightX()) {
+        > rightWallX) {
       // newX[n - 1] = weights.get(n - 1).getX();
       newVx[n - 1] = -newVx[n - 1];
-    }
+    }*/
 
     for (int i = 0; i < n; i++) {
       int offset = i * 4;

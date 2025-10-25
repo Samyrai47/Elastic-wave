@@ -5,19 +5,25 @@ import com.badlogic.gdx.math.Vector2;
 /** Класс пружины */
 public class Spring {
   /** Коэффициент упругости */
-  private float k;
+  private final float k;
 
   /** Число витков пружины */
-  private int coils;
+  private final int coils;
 
   /** Ширина пружины. Требуется для отрисовки витков. */
-  private float width;
+  private final float width;
 
   /** Левая сторона крепления пружины */
   private Vector2 leftAnchor;
 
   /** Правая сторона крепления пружины */
   private Vector2 rightAnchor;
+
+  /** Верхняя сторона крепления пружины*/
+  private Vector2 upperAnchor;
+
+  /** Нижняя сторона крепления пружины*/
+  private Vector2 lowerAnchor;
 
   /** Изначальная длина пружины */
   private final float length;
@@ -46,6 +52,21 @@ public class Spring {
     this.rightHeight = rightHeight;
   }
 
+    public Spring(
+            float k,
+            int coils,
+            float width,
+            float leftHeight,
+            float rightHeight,
+            float length) {
+        this.k = k;
+        this.coils = coils;
+        this.width = width;
+        this.length = length;
+        this.leftHeight = leftHeight;
+        this.rightHeight = rightHeight;
+    }
+
   public float getK() {
     return k;
   }
@@ -66,6 +87,14 @@ public class Spring {
     return rightAnchor;
   }
 
+  public Vector2 getUpperAnchor() {
+      return upperAnchor;
+  }
+
+  public Vector2 getLowerAnchor() {
+      return lowerAnchor;
+  }
+
   public void setLeftAnchor(Vector2 leftAnchor) {
     this.leftAnchor = leftAnchor;
   }
@@ -73,6 +102,10 @@ public class Spring {
   public void setRightAnchor(Vector2 rightAnchor) {
     this.rightAnchor = rightAnchor;
   }
+
+  public void setUpperAnchor(Vector2 upperAnchor) { this.upperAnchor = upperAnchor; }
+
+  public void setLowerAnchor(Vector2 lowerAnchor) { this.lowerAnchor = lowerAnchor; }
 
   public float getLeftX() {
     return leftAnchor.x;
@@ -90,8 +123,20 @@ public class Spring {
     return rightAnchor.y;
   }
 
-  public float getY() {
-    return leftAnchor.y;
+  public float getUpperX() {
+    return upperAnchor.x;
+  }
+
+  public float getUpperY() {
+      return upperAnchor.y;
+  }
+
+  public float getLowerX() {
+      return lowerAnchor.x;
+  }
+
+  public float getLowerY() {
+      return lowerAnchor.y;
   }
 
   public float getLength() {
@@ -103,13 +148,37 @@ public class Spring {
   }
 
   public Vector2 getLeftForce() {
+    if (leftAnchor == null) {
+        return new Vector2(0, 0);
+    }
     Vector2 diffVectors = rightAnchor.cpy().sub(leftAnchor);
     float currentLength = getCurrentLength();
     return diffVectors.scl((-k * (currentLength - length)) / currentLength);
   }
 
   public Vector2 getRightForce() {
+    if (rightAnchor == null) {
+        return new Vector2(0, 0);
+    }
     Vector2 diffVectors = leftAnchor.cpy().sub(rightAnchor);
+    float currentLength = getCurrentLength();
+    return diffVectors.scl((-k * (currentLength - length)) / currentLength);
+  }
+
+  public Vector2 getUpperForce() {
+    if (upperAnchor == null) {
+        return new Vector2(0, 0);
+    }
+    Vector2 diffVectors = lowerAnchor.cpy().sub(upperAnchor);
+    float currentLength = getCurrentLength();
+    return diffVectors.scl((-k * (currentLength - length)) / currentLength);
+  }
+
+  public Vector2 getLowerForce() {
+    if (lowerAnchor == null) {
+        return new Vector2(0, 0);
+    }
+    Vector2 diffVectors = upperAnchor.cpy().sub(lowerAnchor);
     float currentLength = getCurrentLength();
     return diffVectors.scl((-k * (currentLength - length)) / currentLength);
   }
