@@ -10,10 +10,14 @@ public class Weight {
   private float mass;
 
   /** Список пружин, прикрепленных к грузу по x */
-  private List<Spring> horizontalSprings = new ArrayList<>();
+  //private List<Spring> horizontalSprings = new ArrayList<>();
+  private Spring leftSpring;
+  private Spring rightSpring;
 
   /** Список пружин прикрепленных к грузу по y */
-  private List<Spring> verticalSprings = new ArrayList<>();
+  //private List<Spring> verticalSprings = new ArrayList<>();
+  private Spring upperSpring;
+  private Spring lowerSpring;
 
   /** Координата x левой нижней точки груза */
   private float x;
@@ -39,25 +43,41 @@ public class Weight {
     this.velocity = new Vector2(0, 0);
   }
 
-  public void attachHorizontalSprings(Spring spring) {
+  public void setLeftSpring(Spring leftSpring) {
+    this.leftSpring = leftSpring;
+  }
+
+  public void setRightSpring(Spring rightSpring) {
+      this.rightSpring = rightSpring;
+  }
+
+  public void setUpperSpring(Spring upperSpring) {
+      this.upperSpring = upperSpring;
+  }
+
+  public void setLowerSpring(Spring lowerSpring) {
+      this.lowerSpring = lowerSpring;
+  }
+
+  /*public void attachHorizontalSprings(Spring spring) {
     horizontalSprings.add(spring);
   }
 
   public void attachVerticalSprings(Spring spring) {
     verticalSprings.add(spring);
-  }
+  }*/
 
   public float getMass() {
     return mass;
   }
 
-  public List<Spring> getHorizontalSprings() {
+  /*public List<Spring> getHorizontalSprings() {
     return horizontalSprings;
   }
 
   public List<Spring> getVerticalSprings() {
     return verticalSprings;
-  }
+  }*/
 
   public float getX() {
     return x;
@@ -76,19 +96,19 @@ public class Weight {
   }
 
   public Spring getLeftSpring() {
-    return horizontalSprings.get(0);
+    return leftSpring;
   }
 
   public Spring getRightSpring() {
-    return horizontalSprings.get(1);
+    return rightSpring;
   }
 
   public Spring getLowerSpring() {
-    return verticalSprings.get(0);
+    return lowerSpring;
   }
 
   public Spring getUpperSpring() {
-    return verticalSprings.get(1);
+    return upperSpring;
   }
 
   public float getVelocityX() {
@@ -108,18 +128,42 @@ public class Weight {
   }
 
   public void setX(float x) {
-    Spring leftSpring = horizontalSprings.get(0);
-    Spring rightSpring = horizontalSprings.get(1);
     this.x = x;
-    leftSpring.setRightAnchor(new Vector2(x, leftSpring.getRightY()));
-    rightSpring.setLeftAnchor(new Vector2(x + width, rightSpring.getLeftY()));
+    if (leftSpring != null) {
+        leftSpring.setRightAnchor(new Vector2(x, leftSpring.getRightY()));
+    }
+
+    if (rightSpring != null) {
+        rightSpring.setLeftAnchor(new Vector2(x + width, rightSpring.getLeftY()));
+    }
+
+    if (lowerSpring != null) {
+        lowerSpring.setUpperAnchor(new Vector2(x + width / 2, lowerSpring.getUpperY()));
+    }
+
+    if (upperSpring != null) {
+        upperSpring.setUpperAnchor(new Vector2(x + width / 2, upperSpring.getLowerY()));
+    }
   }
 
   public void setY(float y) {
-    Spring leftSpring = horizontalSprings.get(0);
-    Spring rightSpring = horizontalSprings.get(1);
+    /*Spring leftSpring = horizontalSprings.get(0);
+    Spring rightSpring = horizontalSprings.get(1);*/
     this.y = y;
-    leftSpring.setRightAnchor(new Vector2(leftSpring.getRightX(), y + height / 2));
-    rightSpring.setLeftAnchor(new Vector2(rightSpring.getLeftX(), y + height / 2));
+    if (leftSpring != null) {
+        leftSpring.setRightAnchor(new Vector2(leftSpring.getRightX(), y + height / 2));
+    }
+
+    if (rightSpring != null) {
+        rightSpring.setLeftAnchor(new Vector2(rightSpring.getLeftX(), y + height / 2));
+    }
+
+    if (lowerSpring != null) {
+        lowerSpring.setUpperAnchor(new Vector2(lowerSpring.getUpperX(), y));
+    }
+
+    if (upperSpring != null) {
+        upperSpring.setLowerAnchor(new Vector2(upperSpring.getLowerX(), y + height));
+    }
   }
 }

@@ -28,13 +28,18 @@ public class Main extends ApplicationAdapter {
   public static final float PIXELS_PER_METER = 1000.0f;
   private static final float WORLD_HEIGHT = 600;
   private static final float WORLD_WIDTH = 1000;
-  private static final float FIXED_TIME_STEP = 0.00025f;
+  private static final float FIXED_TIME_STEP = 0.01f;
   private float accumulator = 0f;
   private static float simTime = 0f;
 
   private final List<Weight> weights = new ArrayList<>();
   private final List<Spring> springs = new ArrayList<>();
-  private static final int WEIGHTS_NUMBER = 30;
+  private static final int WEIGHTS_NUMBER = 20;
+  /** Границы для стен*/
+  private float leftWallX;
+  private float rightWallX;
+  private float upperWallY;
+  private float lowerWallY;
 
   @Override
   public void create() {
@@ -50,8 +55,9 @@ public class Main extends ApplicationAdapter {
       throw new RuntimeException(e);
     }
 
-    float mass = 0.25f;
-    float leftX = 200;
+    leftWallX = 200;
+    float mass = 10f;
+    float leftX = leftWallX;
     float length = 200;
     float width = 50;
     float k = 47;
@@ -84,10 +90,10 @@ public class Main extends ApplicationAdapter {
       }
       springs.add(spring);
       if (i != 0) {
-        weights.get(weights.size() - 1).attachHorizontalSprings(spring);
+        weights.get(weights.size() - 1).setRightSpring(spring);
       }
       Weight weight = new Weight(mass, leftX + length, weightY, width, 50);
-      weight.attachHorizontalSprings(spring);
+      weight.setLeftSpring(spring);
       weights.add(weight);
       leftX = leftX + length + width;
     }
@@ -100,8 +106,11 @@ public class Main extends ApplicationAdapter {
             8.0f,
             weightHeight,
             wallHeight);
-    weights.get(weights.size() - 1).attachHorizontalSprings(lastSpring);
+    rightWallX = lastSpring.getRightX();
+    weights.get(weights.size() - 1).setRightSpring(lastSpring);
     springs.add(lastSpring);
+    physics.setLeftWallX(leftWallX);
+    physics.setRightWallX(rightWallX);
 
     Gdx.input.setInputProcessor(
         new InputAdapter() {
@@ -152,10 +161,9 @@ public class Main extends ApplicationAdapter {
     }
 
     // отрисовка стен
-    Spring lastSpring = springs.get(springs.size() - 1);
     shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-    shapeRenderer.line(200, 70, 200, 70 + springs.get(0).getLeftHeight());
-    shapeRenderer.line(lastSpring.getRightX(), 70, lastSpring.getRightX(), 530);
+    shapeRenderer.line(leftWallX, 70, leftWallX, 70 + springs.get(0).getLeftHeight());
+    shapeRenderer.line(rightWallX, 70, rightWallX, 530);
     shapeRenderer.end();
 
     drawSprings(springs);
@@ -218,7 +226,7 @@ public class Main extends ApplicationAdapter {
 
   private void handleInput() {
     if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-      physics.pushFirstWeight(weights, 0f, 1000f);
+      physics.pushFirstWeight(weights, 1000f, 400f);
     }
   }
 
