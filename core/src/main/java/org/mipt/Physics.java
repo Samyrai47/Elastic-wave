@@ -9,6 +9,8 @@ public class Physics {
   private static final float EPSILON = 0.0001F;
   private static float leftWallX;
   private static float rightWallX;
+  private static float upperWallY;
+  private static float lowerWallY;
 
   public Physics() {}
 
@@ -18,6 +20,14 @@ public class Physics {
 
     public void setRightWallX(float rightWallX) {
       Physics.rightWallX = rightWallX;
+    }
+
+    public void setUpperWallY(float upperWallY) {
+      Physics.upperWallY = upperWallY;
+    }
+
+    public void setLowerWallY(float lowerWallY) {
+      Physics.lowerWallY = lowerWallY;
     }
 
     /**
@@ -51,6 +61,7 @@ public class Physics {
       state[offset + 2] = weights.get(i).getVelocityX();
       state[offset + 3] = weights.get(i).getVelocityY();
     }
+    //System.out.println("Initial state: " + Arrays.toString(state));
 
     state = RT4(state, weights, deltaTime);
 
@@ -75,9 +86,12 @@ public class Physics {
    */
   private static float[] RT4(float[] state, List<Weight> weights, float h) {
     float[] k1 = multipleVector(makeDiff(weights, state), h);
+    //System.out.println("Make diff k1: " + Arrays.toString(makeDiff(weights, state)));
     float[] k2 = multipleVector(makeDiff(weights, addVectors(state, multipleVector(k1, 0.5f))), h);
     float[] k3 = multipleVector(makeDiff(weights, addVectors(state, multipleVector(k2, 0.5f))), h);
     float[] k4 = multipleVector(makeDiff(weights, addVectors(state, k3)), h);
+
+    //System.out.println("RT4: " + Arrays.toString(k1) + " " + Arrays.toString(k2) + " " + Arrays.toString(k3) +  " " + Arrays.toString(k4));
 
     float[] newZ =
         addVectors(
@@ -102,6 +116,7 @@ public class Physics {
       float vx = state[offset + 2];
       float vy = state[offset + 3];
       Vector2 acceleration = diffZ(i, weights);
+      //System.out.println("Acceleration: " + acceleration);
 
       res[offset] = vx;
       res[offset + 1] = vy;
@@ -125,24 +140,29 @@ public class Physics {
 
     if (weight.getLeftSpring() != null) {
       Vector2 leftForce = weight.getLeftSpring().getLeftForce();
+      //System.out.println("Left Force: " + leftForce);
       force.add(leftForce);
     }
 
     if (weight.getRightSpring() != null) {
       Vector2 rightForce = weight.getRightSpring().getRightForce();
+      //System.out.println("Right Force: " + rightForce);
       force.add(rightForce);
     }
 
     if (weight.getLowerSpring() != null) {
         Vector2 lowerForce = weight.getLowerSpring().getLowerForce();
+        //System.out.println("Lower Force: " + lowerForce);
         force.add(lowerForce);
     }
 
     if (weight.getUpperSpring() != null) {
         Vector2 upperForce = weight.getUpperSpring().getUpperForce();
+        //System.out.println("Upper Force: " + upperForce);
         force.add(upperForce);
     }
 
+    //System.out.println(force);
     //    float damping = 0.05f;
     //    Vector2 velocity = new Vector2(weight.getVelocityX(), weight.getVelocityY());
     //    force.sub(velocity.scl(damping));
@@ -213,6 +233,14 @@ public class Physics {
 
         if (newX[i] + weights.get(i).getWidth() > rightWallX){
             newVx[i] = -newVx[i];
+        }
+
+        if (newY[i] < lowerWallY){
+            newVy[i] = -newVy[i];
+        }
+
+        if (newY[i] + weights.get(i).getHeight() > upperWallY){
+            newVy[i] = -newVy[i];
         }
     }
     /*if (newX[0] < leftWallX) {

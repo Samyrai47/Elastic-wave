@@ -34,7 +34,8 @@ public class Main extends ApplicationAdapter {
 
   private final List<Weight> weights = new ArrayList<>();
   private final List<Spring> springs = new ArrayList<>();
-  private static final int WEIGHTS_NUMBER = 20;
+  private static final int WEIGHTS_NUMBER_X = 2;
+  private static final int WEIGHTS_NUMBER_Y = 2;
   /** Границы для стен*/
   private float leftWallX;
   private float rightWallX;
@@ -50,14 +51,13 @@ public class Main extends ApplicationAdapter {
     shapeRenderer = new ShapeRenderer();
     physics = new Physics();
     try {
-      logger = new PhysicsLogger("dataset", WEIGHTS_NUMBER);
+      logger = new PhysicsLogger("dataset", WEIGHTS_NUMBER_X * WEIGHTS_NUMBER_Y);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
 
     leftWallX = 200;
     float mass = 10f;
-    float leftX = leftWallX;
     float length = 200;
     float width = 50;
     float k = 47;
@@ -65,52 +65,73 @@ public class Main extends ApplicationAdapter {
     float weightY = 275;
     float wallHeight = 460;
     float weightHeight = 50;
-    for (int i = 0; i < WEIGHTS_NUMBER; i++) {
-      Spring spring;
-      if (i == 0) {
-        spring =
-            new Spring(
-                k,
-                new Vector2(leftX, SpringY),
-                new Vector2(leftX + length, SpringY),
-                20,
-                8.0f,
-                wallHeight,
-                weightHeight);
-      } else {
-        spring =
-            new Spring(
-                k,
-                new Vector2(leftX, SpringY),
-                new Vector2(leftX + length, SpringY),
-                20,
-                8.0f,
-                weightHeight,
-                weightHeight);
-      }
-      springs.add(spring);
-      if (i != 0) {
-        weights.get(weights.size() - 1).setRightSpring(spring);
-      }
-      Weight weight = new Weight(mass, leftX + length, weightY, width, 50);
-      weight.setLeftSpring(spring);
-      weights.add(weight);
-      leftX = leftX + length + width;
+    float lowerY = 275;
+    lowerWallY = lowerY - length;
+    for (int j = 0; j < WEIGHTS_NUMBER_Y; j++) {
+        float leftX = leftWallX;
+        for (int i = 0; i < WEIGHTS_NUMBER_X; i++) {
+            Spring horizontalSpring;
+            if (i == 0) {
+                horizontalSpring =
+                        new Spring(
+                                k,
+                                new Vector2(leftX, lowerY + weightHeight / 2),
+                                new Vector2(leftX + length, lowerY + weightHeight / 2),
+                                20,
+                                8.0f
+                        );
+            } else {
+                horizontalSpring =
+                        new Spring(
+                                k,
+                                new Vector2(leftX, lowerY + weightHeight / 2),
+                                new Vector2(leftX + length, lowerY + weightHeight / 2),
+                                20,
+                                8.0f
+                        );
+            }
+            springs.add(horizontalSpring);
+            if (i != 0) {
+                weights.get(weights.size() - 1).setRightSpring(horizontalSpring);
+            }
+            Spring verticalSpring = new Spring(k, 20, 8.0f, length);
+            verticalSpring.setUpperAnchor(new Vector2(leftX + width / 2 + length, lowerY));
+            verticalSpring.setLowerAnchor(new Vector2(leftX + width / 2 + length, lowerY - length));
+            springs.add(verticalSpring);
+            if (j != 0){
+                weights.get(weights.size() - WEIGHTS_NUMBER_X).setUpperSpring(verticalSpring);
+            }
+            Weight weight = new Weight(mass, leftX + length, lowerY, width, weightHeight);
+            weight.setLeftSpring(horizontalSpring);
+            weight.setLowerSpring(verticalSpring);
+            weights.add(weight);
+            leftX = leftX + length + width;
+        }
+        Spring lastSpring =
+                new Spring(
+                        k,
+                        new Vector2(leftX, lowerY + weightHeight / 2),
+                        new Vector2(leftX + length, lowerY + weightHeight / 2),
+                        20,
+                        8.0f);
+        weights.get(weights.size() - 1).setRightSpring(lastSpring);
+        springs.add(lastSpring);
+        lowerY = lowerY + weightHeight + length;
     }
-    Spring lastSpring =
-        new Spring(
-            k,
-            new Vector2(leftX, SpringY),
-            new Vector2(leftX + length, SpringY),
-            20,
-            8.0f,
-            weightHeight,
-            wallHeight);
-    rightWallX = lastSpring.getRightX();
-    weights.get(weights.size() - 1).setRightSpring(lastSpring);
-    springs.add(lastSpring);
+    rightWallX = springs.get(springs.size() - 1).getRightX();
+    upperWallY = weights.get(weights.size() - 1).getY() + weightHeight + length;
+    for (int i = 0; i < WEIGHTS_NUMBER_X; i++) {
+        Spring verticalSpring = new Spring(k, 20, 8.0f, length);
+        Weight weight = weights.get(weights.size() - WEIGHTS_NUMBER_X + i);
+        verticalSpring.setUpperAnchor(new Vector2(weight.getX() + width / 2, weight.getY() + weightHeight + length));
+        verticalSpring.setLowerAnchor(new Vector2(weight.getX() + width / 2, weight.getY() + weightHeight));
+        weight.setUpperSpring(verticalSpring);
+        springs.add(verticalSpring);
+    }
     physics.setLeftWallX(leftWallX);
     physics.setRightWallX(rightWallX);
+    physics.setUpperWallY(upperWallY);
+    physics.setLowerWallY(lowerWallY);
 
     Gdx.input.setInputProcessor(
         new InputAdapter() {
@@ -162,8 +183,10 @@ public class Main extends ApplicationAdapter {
 
     // отрисовка стен
     shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-    shapeRenderer.line(leftWallX, 70, leftWallX, 70 + springs.get(0).getLeftHeight());
-    shapeRenderer.line(rightWallX, 70, rightWallX, 530);
+    shapeRenderer.line(leftWallX, lowerWallY, leftWallX, upperWallY);
+    shapeRenderer.line(rightWallX, lowerWallY, rightWallX, upperWallY);
+    shapeRenderer.line(leftWallX, lowerWallY, rightWallX, lowerWallY);
+    shapeRenderer.line(leftWallX, upperWallY, rightWallX, upperWallY);
     shapeRenderer.end();
 
     drawSprings(springs);
@@ -183,16 +206,26 @@ public class Main extends ApplicationAdapter {
     shapeRenderer.setColor(Color.WHITE);
 
     for (Spring spring : springs) {
-      float dx = (spring.getRightAnchor().x - spring.getLeftAnchor().x) / spring.getCoils();
-      float dy = (spring.getRightAnchor().y - spring.getLeftAnchor().y) / spring.getCoils();
+      float dx;
+      float dy;
+      Vector2 boardAnchor;
+      if (spring.getLeftAnchor() != null) {
+          dx = (spring.getRightAnchor().x - spring.getLeftAnchor().x) / spring.getCoils();
+          dy = (spring.getRightAnchor().y - spring.getLeftAnchor().y) / spring.getCoils();
+          boardAnchor = spring.getLeftAnchor();
+      } else {
+          dx = (spring.getUpperAnchor().x - spring.getLowerAnchor().x) / spring.getCoils();
+          dy = (spring.getUpperAnchor().y - spring.getLowerAnchor().y) / spring.getCoils();
+          boardAnchor = spring.getLowerAnchor();
+      }
 
       for (int i = 0; i < spring.getCoils(); i++) {
         float sign = (i % 2 == 0) ? 1 : -1;
 
-        float x1 = spring.getLeftAnchor().x + dx * i;
-        float y1 = spring.getLeftAnchor().y + dy * i;
-        float x2 = spring.getLeftAnchor().x + dx * (i + 1);
-        float y2 = spring.getLeftAnchor().y + dy * (i + 1);
+        float x1 = boardAnchor.x + dx * i;
+        float y1 = boardAnchor.y + dy * i;
+        float x2 = boardAnchor.x + dx * (i + 1);
+        float y2 = boardAnchor.y + dy * (i + 1);
 
         // нормаль
         float nx = -dy;
@@ -226,7 +259,7 @@ public class Main extends ApplicationAdapter {
 
   private void handleInput() {
     if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-      physics.pushFirstWeight(weights, 1000f, 400f);
+      physics.pushFirstWeight(weights, 0, 400f);
     }
   }
 
