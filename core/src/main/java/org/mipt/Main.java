@@ -34,8 +34,8 @@ public class Main extends ApplicationAdapter {
 
   private final List<Weight> weights = new ArrayList<>();
   private final List<Spring> springs = new ArrayList<>();
-  private static final int WEIGHTS_NUMBER_X = 2;
-  private static final int WEIGHTS_NUMBER_Y = 2;
+  private static final int WEIGHTS_NUMBER_X = 3;
+  private static final int WEIGHTS_NUMBER_Y = 3;
   /** Границы для стен*/
   private float leftWallX;
   private float rightWallX;
@@ -56,6 +56,8 @@ public class Main extends ApplicationAdapter {
       throw new RuntimeException(e);
     }
 
+    physics.setWeightsNumberX(WEIGHTS_NUMBER_X);
+    physics.setWeightsNumberY(WEIGHTS_NUMBER_Y);
     leftWallX = 200;
     float mass = 10f;
     float length = 200;
@@ -259,7 +261,7 @@ public class Main extends ApplicationAdapter {
 
   private void handleInput() {
     if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-      physics.pushFirstWeight(weights, 0, 400f);
+      physics.pushFirstWeight(weights, 400f, 400f);
     }
   }
 

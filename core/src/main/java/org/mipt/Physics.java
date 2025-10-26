@@ -11,6 +11,8 @@ public class Physics {
   private static float rightWallX;
   private static float upperWallY;
   private static float lowerWallY;
+  private static int weightsNumberX;
+  private static int weightsNumberY;
 
   public Physics() {}
 
@@ -28,6 +30,14 @@ public class Physics {
 
     public void setLowerWallY(float lowerWallY) {
       Physics.lowerWallY = lowerWallY;
+    }
+
+    public void setWeightsNumberX(int weightsNumberX) {
+      Physics.weightsNumberX = weightsNumberX;
+    }
+
+    public void setWeightsNumberY(int weightsNumberY) {
+      Physics.weightsNumberY = weightsNumberY;
     }
 
     /**
@@ -217,12 +227,24 @@ public class Physics {
       newVy[i] = state[offset + 3];
     }
 
-    for (int i = 0; i < weights.size() - 1; i++) {
-      int j = i + 1;
-      if (isColliding(weights.get(i), newX[i], newY[i], weights.get(j), newX[j], newY[j])) {
-        resolveCollision(
-            weights.get(i), newX[i], newY[i], weights.get(j), newX[j], newY[j], newVx, newVy, i, j);
-      }
+    for (int j = 0; j < weightsNumberY; ++j) {
+        for (int i = 0; i < weightsNumberX; ++i) {
+            int index = j * weightsNumberX + i;
+            if (i != weightsNumberX - 1){
+                int neighbour = index + 1;
+                if (isColliding(weights.get(index), newX[index], newY[index], weights.get(neighbour), newX[neighbour], newY[neighbour])) {
+                    resolveCollision(weights.get(index), newX[index], newY[index],
+                            weights.get(neighbour), newX[neighbour], newY[neighbour], newVx, newVy, index, neighbour);
+                }
+            }
+            if (j != weightsNumberY - 1){
+                int neighbour = index + weightsNumberX;
+                if (isColliding(weights.get(index), newX[index], newY[index], weights.get(neighbour), newX[neighbour], newY[neighbour])) {
+                    resolveCollision(weights.get(index), newX[index], newY[index],
+                            weights.get(neighbour), newX[neighbour], newY[neighbour], newVx, newVy, index, neighbour);
+                }
+            }
+        }
     }
 
     // TODO переделать обработку коллизий со стенками, из-за непонятного поведения груза
