@@ -142,7 +142,7 @@ public class Weight {
     }
 
     if (upperSpring != null) {
-        upperSpring.setUpperAnchor(new Vector2(x + width / 2, upperSpring.getLowerY()));
+        upperSpring.setLowerAnchor(new Vector2(x + width / 2, upperSpring.getLowerY()));
     }
   }
 

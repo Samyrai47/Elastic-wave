@@ -28,43 +28,29 @@ public class Spring {
   /** Изначальная длина пружины */
   private final float length;
 
-  /** Высота левого закрепленного объекта */
-  private final float leftHeight;
-
-  /** Высота правого закрепленного объекта */
-  private final float rightHeight;
-
   public Spring(
       float k,
       Vector2 leftAnchor,
       Vector2 rightAnchor,
       int coils,
-      float width,
-      float leftHeight,
-      float rightHeight) {
+      float width) {
     this.k = k;
     this.leftAnchor = leftAnchor;
     this.rightAnchor = rightAnchor;
     this.coils = coils;
     this.width = width;
     this.length = rightAnchor.dst(leftAnchor);
-    this.leftHeight = leftHeight;
-    this.rightHeight = rightHeight;
   }
 
     public Spring(
             float k,
             int coils,
             float width,
-            float leftHeight,
-            float rightHeight,
             float length) {
         this.k = k;
         this.coils = coils;
         this.width = width;
         this.length = length;
-        this.leftHeight = leftHeight;
-        this.rightHeight = rightHeight;
     }
 
   public float getK() {
@@ -144,7 +130,10 @@ public class Spring {
   }
 
   public float getCurrentLength() {
-    return rightAnchor.cpy().sub(leftAnchor).len();
+    if (rightAnchor != null) {
+        return rightAnchor.cpy().sub(leftAnchor).len();
+    }
+    return upperAnchor.cpy().sub(lowerAnchor).len();
   }
 
   public Vector2 getLeftForce() {
@@ -183,11 +172,4 @@ public class Spring {
     return diffVectors.scl((-k * (currentLength - length)) / currentLength);
   }
 
-  public float getLeftHeight() {
-    return leftHeight;
-  }
-
-  public float getRightHeight() {
-    return rightHeight;
-  }
 }
