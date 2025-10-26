@@ -10,12 +10,10 @@ public class Weight {
   private float mass;
 
   /** Список пружин, прикрепленных к грузу по x */
-  //private List<Spring> horizontalSprings = new ArrayList<>();
   private Spring leftSpring;
   private Spring rightSpring;
 
   /** Список пружин прикрепленных к грузу по y */
-  //private List<Spring> verticalSprings = new ArrayList<>();
   private Spring upperSpring;
   private Spring lowerSpring;
 
@@ -59,25 +57,9 @@ public class Weight {
       this.lowerSpring = lowerSpring;
   }
 
-  /*public void attachHorizontalSprings(Spring spring) {
-    horizontalSprings.add(spring);
-  }
-
-  public void attachVerticalSprings(Spring spring) {
-    verticalSprings.add(spring);
-  }*/
-
   public float getMass() {
     return mass;
   }
-
-  /*public List<Spring> getHorizontalSprings() {
-    return horizontalSprings;
-  }
-
-  public List<Spring> getVerticalSprings() {
-    return verticalSprings;
-  }*/
 
   public float getX() {
     return x;

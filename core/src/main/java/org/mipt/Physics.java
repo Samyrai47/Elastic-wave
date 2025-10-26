@@ -13,6 +13,7 @@ public class Physics {
   private static float lowerWallY;
   private static int weightsNumberX;
   private static int weightsNumberY;
+  private static final int NEIGHBOURS_DEPTH = 3;
 
   public Physics() {}
 
@@ -71,7 +72,6 @@ public class Physics {
       state[offset + 2] = weights.get(i).getVelocityX();
       state[offset + 3] = weights.get(i).getVelocityY();
     }
-    //System.out.println("Initial state: " + Arrays.toString(state));
 
     state = RT4(state, weights, deltaTime);
 
@@ -96,12 +96,10 @@ public class Physics {
    */
   private static float[] RT4(float[] state, List<Weight> weights, float h) {
     float[] k1 = multipleVector(makeDiff(weights, state), h);
-    //System.out.println("Make diff k1: " + Arrays.toString(makeDiff(weights, state)));
     float[] k2 = multipleVector(makeDiff(weights, addVectors(state, multipleVector(k1, 0.5f))), h);
     float[] k3 = multipleVector(makeDiff(weights, addVectors(state, multipleVector(k2, 0.5f))), h);
     float[] k4 = multipleVector(makeDiff(weights, addVectors(state, k3)), h);
 
-    //System.out.println("RT4: " + Arrays.toString(k1) + " " + Arrays.toString(k2) + " " + Arrays.toString(k3) +  " " + Arrays.toString(k4));
 
     float[] newZ =
         addVectors(
@@ -126,7 +124,6 @@ public class Physics {
       float vx = state[offset + 2];
       float vy = state[offset + 3];
       Vector2 acceleration = diffZ(i, weights);
-      //System.out.println("Acceleration: " + acceleration);
 
       res[offset] = vx;
       res[offset + 1] = vy;
@@ -150,32 +147,23 @@ public class Physics {
 
     if (weight.getLeftSpring() != null) {
       Vector2 leftForce = weight.getLeftSpring().getLeftForce();
-      //System.out.println("Left Force: " + leftForce);
       force.add(leftForce);
     }
 
     if (weight.getRightSpring() != null) {
       Vector2 rightForce = weight.getRightSpring().getRightForce();
-      //System.out.println("Right Force: " + rightForce);
       force.add(rightForce);
     }
 
     if (weight.getLowerSpring() != null) {
         Vector2 lowerForce = weight.getLowerSpring().getLowerForce();
-        //System.out.println("Lower Force: " + lowerForce);
         force.add(lowerForce);
     }
 
     if (weight.getUpperSpring() != null) {
         Vector2 upperForce = weight.getUpperSpring().getUpperForce();
-        //System.out.println("Upper Force: " + upperForce);
         force.add(upperForce);
     }
-
-    //System.out.println(force);
-    //    float damping = 0.05f;
-    //    Vector2 velocity = new Vector2(weight.getVelocityX(), weight.getVelocityY());
-    //    force.sub(velocity.scl(damping));
 
     return force.scl(1f / m);
   }
@@ -230,24 +218,18 @@ public class Physics {
     for (int j = 0; j < weightsNumberY; ++j) {
         for (int i = 0; i < weightsNumberX; ++i) {
             int index = j * weightsNumberX + i;
-            if (i != weightsNumberX - 1){
-                int neighbour = index + 1;
-                if (isColliding(weights.get(index), newX[index], newY[index], weights.get(neighbour), newX[neighbour], newY[neighbour])) {
-                    resolveCollision(weights.get(index), newX[index], newY[index],
-                            weights.get(neighbour), newX[neighbour], newY[neighbour], newVx, newVy, index, neighbour);
-                }
-            }
-            if (j != weightsNumberY - 1){
-                int neighbour = index + weightsNumberX;
-                if (isColliding(weights.get(index), newX[index], newY[index], weights.get(neighbour), newX[neighbour], newY[neighbour])) {
-                    resolveCollision(weights.get(index), newX[index], newY[index],
-                            weights.get(neighbour), newX[neighbour], newY[neighbour], newVx, newVy, index, neighbour);
+            for (int x = 0; x <= NEIGHBOURS_DEPTH && x + i < weightsNumberX; ++x) {
+                for (int y = 0; y + x <= NEIGHBOURS_DEPTH && y + j < weightsNumberY; ++y) {
+                    int neighbour = (j + y) * weightsNumberX + x + i;
+                    if (isColliding(weights.get(index), newX[index], newY[index], weights.get(neighbour), newX[neighbour], newY[neighbour])) {
+                        resolveCollision(weights.get(index), newX[index], newY[index],
+                                weights.get(neighbour), newX[neighbour], newY[neighbour], newVx, newVy, index, neighbour);
+                    }
                 }
             }
         }
     }
 
-    // TODO переделать обработку коллизий со стенками, из-за непонятного поведения груза
     for (int i = 0; i < n; i++) {
         if (newX[i] < leftWallX){
             newVx[i] = -newVx[i];
@@ -265,15 +247,6 @@ public class Physics {
             newVy[i] = -newVy[i];
         }
     }
-    /*if (newX[0] < leftWallX) {
-      // newX[0] = weights.get(0).getX();
-      newVx[0] = -newVx[0];
-    }
-    if (newX[n - 1] + weights.get(n - 1).getWidth()
-        > rightWallX) {
-      // newX[n - 1] = weights.get(n - 1).getX();
-      newVx[n - 1] = -newVx[n - 1];
-    }*/
 
     for (int i = 0; i < n; i++) {
       int offset = i * 4;
