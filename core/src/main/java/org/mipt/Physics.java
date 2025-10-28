@@ -2,6 +2,7 @@ package org.mipt;
 
 import com.badlogic.gdx.math.Vector2;
 import java.util.List;
+import org.mipt.entity.Spring;
 import org.mipt.entity.Weight;
 
 /** Класс для пересчета физики. */
@@ -17,31 +18,31 @@ public class Physics {
 
   public Physics() {}
 
-    public void setLeftWallX(float leftWallX) {
-        Physics.leftWallX = leftWallX;
-    }
+  public void setLeftWallX(float leftWallX) {
+    Physics.leftWallX = leftWallX;
+  }
 
-    public void setRightWallX(float rightWallX) {
-      Physics.rightWallX = rightWallX;
-    }
+  public void setRightWallX(float rightWallX) {
+    Physics.rightWallX = rightWallX;
+  }
 
-    public void setUpperWallY(float upperWallY) {
-      Physics.upperWallY = upperWallY;
-    }
+  public void setUpperWallY(float upperWallY) {
+    Physics.upperWallY = upperWallY;
+  }
 
-    public void setLowerWallY(float lowerWallY) {
-      Physics.lowerWallY = lowerWallY;
-    }
+  public void setLowerWallY(float lowerWallY) {
+    Physics.lowerWallY = lowerWallY;
+  }
 
-    public void setWeightsNumberX(int weightsNumberX) {
-      Physics.weightsNumberX = weightsNumberX;
-    }
+  public void setWeightsNumberX(int weightsNumberX) {
+    Physics.weightsNumberX = weightsNumberX;
+  }
 
-    public void setWeightsNumberY(int weightsNumberY) {
-      Physics.weightsNumberY = weightsNumberY;
-    }
+  public void setWeightsNumberY(int weightsNumberY) {
+    Physics.weightsNumberY = weightsNumberY;
+  }
 
-    /**
+  /**
    * Просчитывает физику для модели
    *
    * @param weights грузы
@@ -100,7 +101,6 @@ public class Physics {
     float[] k3 = multipleVector(makeDiff(weights, addVectors(state, multipleVector(k2, 0.5f))), h);
     float[] k4 = multipleVector(makeDiff(weights, addVectors(state, k3)), h);
 
-
     float[] newZ =
         addVectors(
             addVectors(addVectors(k1, multipleVector(k2, 2.0f)), multipleVector(k3, 2.0f)), k4);
@@ -116,56 +116,143 @@ public class Physics {
    * @return вектор производных
    */
   private static float[] makeDiff(List<Weight> weights, float[] state) {
+    int n = weights.size();
     float[] res = new float[state.length];
 
-    for (int i = 0; i < weights.size(); i++) {
-      int offset = i * 4;
+    for (int i = 0; i < n; i++) {
+      int off = i * 4;
 
-      float vx = state[offset + 2];
-      float vy = state[offset + 3];
-      Vector2 acceleration = diffZ(i, weights);
+      float vx = state[off + 2];
+      float vy = state[off + 3];
 
-      res[offset] = vx;
-      res[offset + 1] = vy;
-      res[offset + 2] = acceleration.x;
-      res[offset + 3] = acceleration.y;
+      Vector2 a = accelFromState(i, weights, state);
+
+      res[off] = vx;
+      res[off + 1] = vy;
+      res[off + 2] = a.x;
+      res[off + 3] = a.y;
     }
     return res;
   }
 
-  /**
-   * Находит производную от z <=> Находит ускорение груза
-   *
-   * @param index номер груза
-   * @param weights набор грузов
-   * @return производную z <=> ускорение груза
-   */
-  private static Vector2 diffZ(int index, List<Weight> weights) {
-    Weight weight = weights.get(index);
-    float m = weight.getMass();
+  private static Vector2 accelFromState(int idx, List<Weight> weights, float[] state) {
+    final int nx = weightsNumberX;
+    final int ny = weightsNumberY;
+    int j = idx / nx, i = idx % nx;
+
+    Weight w = weights.get(idx);
+    float m = w.getMass();
+
+    int off = idx * 4;
+    float x = state[off];
+    float y = state[off + 1];
+    float wWidth = w.getWidth();
+    float wHeight = w.getHeight();
+
+    Vector2 leftEnd = new Vector2(x, y + wHeight / 2f);
+    Vector2 rightEnd = new Vector2(x + wWidth, y + wHeight / 2f);
+    Vector2 bottomEnd = new Vector2(x + wWidth / 2f, y);
+    Vector2 topEnd = new Vector2(x + wWidth / 2f, y + wHeight);
+
     Vector2 force = new Vector2();
 
-    if (weight.getLeftSpring() != null) {
-      Vector2 leftForce = weight.getLeftSpring().getLeftForce();
-      force.add(leftForce);
+    if (w.getLeftSpring() != null) {
+      Spring s = w.getLeftSpring();
+      Vector2 other =
+          (i == 0)
+              ? new Vector2(leftWallX, y + wHeight / 2f)
+              : rightEdgeCenterOf(i - 1, j, nx, weights, state);
+
+      force.add(hooke(other, leftEnd, s.getK(), s.getLength()));
     }
 
-    if (weight.getRightSpring() != null) {
-      Vector2 rightForce = weight.getRightSpring().getRightForce();
-      force.add(rightForce);
+    if (w.getRightSpring() != null) {
+      Spring s = w.getRightSpring();
+      Vector2 other =
+          (i == nx - 1)
+              ? new Vector2(rightWallX, y + wHeight / 2f)
+              : leftEdgeCenterOf(i + 1, j, nx, weights, state);
+
+      force.add(hooke(other, rightEnd, s.getK(), s.getLength()));
     }
 
-    if (weight.getLowerSpring() != null) {
-        Vector2 lowerForce = weight.getLowerSpring().getLowerForce();
-        force.add(lowerForce);
+    if (w.getLowerSpring() != null) {
+      Spring s = w.getLowerSpring();
+      Vector2 other =
+          (j == 0)
+              ? new Vector2(x + wWidth / 2f, lowerWallY)
+              : topEdgeCenterOf(i, j - 1, nx, weights, state);
+
+      force.add(hooke(other, bottomEnd, s.getK(), s.getLength()));
     }
 
-    if (weight.getUpperSpring() != null) {
-        Vector2 upperForce = weight.getUpperSpring().getUpperForce();
-        force.add(upperForce);
+    if (w.getUpperSpring() != null) {
+      Spring s = w.getUpperSpring();
+      Vector2 other =
+          (j == ny - 1)
+              ? new Vector2(x + wWidth / 2f, upperWallY)
+              : bottomEdgeCenterOf(i, j + 1, nx, weights, state);
+
+      force.add(hooke(other, topEnd, s.getK(), s.getLength()));
+    }
+
+    if (w.getUpperLeftSpring() != null && i > 0 && j < ny - 1) {
+      Spring s = w.getUpperLeftSpring();
+      Vector2 other = topEdgeCenterOf(i - 1, j + 1, nx, weights, state);
+      force.add(hooke(other, topEnd, s.getK(), s.getLength()));
+    }
+    if (w.getUpperRightSpring() != null && i < nx - 1 && j < ny - 1) {
+      Spring s = w.getUpperRightSpring();
+      Vector2 other = topEdgeCenterOf(i + 1, j + 1, nx, weights, state);
+      force.add(hooke(other, topEnd, s.getK(), s.getLength()));
+    }
+    if (w.getLowerLeftSpring() != null && i > 0 && j > 0) {
+      Spring s = w.getLowerLeftSpring();
+      Vector2 other = bottomEdgeCenterOf(i - 1, j - 1, nx, weights, state);
+      force.add(hooke(other, bottomEnd, s.getK(), s.getLength()));
+    }
+    if (w.getLowerRightSpring() != null && i < nx - 1 && j > 0) {
+      Spring s = w.getLowerRightSpring();
+      Vector2 other = bottomEdgeCenterOf(i + 1, j - 1, nx, weights, state);
+      force.add(hooke(other, bottomEnd, s.getK(), s.getLength()));
     }
 
     return force.scl(1f / m);
+  }
+
+  private static Vector2 hooke(Vector2 from, Vector2 to, float k, float restLen) {
+    Vector2 d = to.cpy().sub(from);
+    float L = d.len();
+    if (L < EPSILON) return new Vector2();
+    float ext = L - restLen;
+    return d.scl((-k * ext) / L);
+  }
+
+  private static Vector2 leftEdgeCenterOf(int i, int j, int nx, List<Weight> w, float[] st) {
+    int idx = j * nx + i, off = idx * 4;
+    float x = st[off], y = st[off + 1];
+    return new Vector2(x, y + w.get(idx).getHeight() / 2f);
+  }
+
+  private static Vector2 rightEdgeCenterOf(int i, int j, int nx, List<Weight> w, float[] st) {
+    int idx = j * nx + i, off = idx * 4;
+    float x = st[off], y = st[off + 1];
+    Weight wi = w.get(idx);
+    return new Vector2(x + wi.getWidth(), y + wi.getHeight() / 2f);
+  }
+
+  private static Vector2 bottomEdgeCenterOf(int i, int j, int nx, List<Weight> w, float[] st) {
+    int idx = j * nx + i, off = idx * 4;
+    float x = st[off], y = st[off + 1];
+    Weight wi = w.get(idx);
+    return new Vector2(x + wi.getWidth() / 2f, y);
+  }
+
+  private static Vector2 topEdgeCenterOf(int i, int j, int nx, List<Weight> w, float[] st) {
+    int idx = j * nx + i, off = idx * 4;
+    float x = st[off], y = st[off + 1];
+    Weight wi = w.get(idx);
+    return new Vector2(x + wi.getWidth() / 2f, y + wi.getHeight());
   }
 
   /**
@@ -200,7 +287,6 @@ public class Physics {
   }
 
   /** Обрабатываем коллизии грузов при абсолютно упругом ударе */
-  // TODO Отладить процесс коллизий, так как во время колебаний грузы могут исчезнуть
   private static void handleCollisions(List<Weight> weights, float[] state) {
     int n = weights.size();
     float[] newX = new float[n];
@@ -216,36 +302,55 @@ public class Physics {
     }
 
     for (int j = 0; j < weightsNumberY; ++j) {
-        for (int i = 0; i < weightsNumberX; ++i) {
-            int index = j * weightsNumberX + i;
-            for (int x = 0; x <= NEIGHBOURS_DEPTH && x + i < weightsNumberX; ++x) {
-                for (int y = 0; y + x <= NEIGHBOURS_DEPTH && y + j < weightsNumberY; ++y) {
-                    int neighbour = (j + y) * weightsNumberX + x + i;
-                    if (isColliding(weights.get(index), newX[index], newY[index], weights.get(neighbour), newX[neighbour], newY[neighbour])) {
-                        resolveCollision(weights.get(index), newX[index], newY[index],
-                                weights.get(neighbour), newX[neighbour], newY[neighbour], newVx, newVy, index, neighbour);
-                    }
-                }
+      for (int i = 0; i < weightsNumberX; ++i) {
+        int index = j * weightsNumberX + i;
+        for (int x = 0; x <= NEIGHBOURS_DEPTH && x + i < weightsNumberX; ++x) {
+          for (int y = 0; y + x <= NEIGHBOURS_DEPTH && y + j < weightsNumberY; ++y) {
+            int neighbour = (j + y) * weightsNumberX + x + i;
+            if (isColliding(
+                weights.get(index),
+                newX[index],
+                newY[index],
+                weights.get(neighbour),
+                newX[neighbour],
+                newY[neighbour])) {
+              resolveCollision(
+                  weights.get(index),
+                  newX[index],
+                  newY[index],
+                  weights.get(neighbour),
+                  newX[neighbour],
+                  newY[neighbour],
+                  newVx,
+                  newVy,
+                  index,
+                  neighbour);
             }
+          }
         }
+      }
     }
 
     for (int i = 0; i < n; i++) {
-        if (newX[i] < leftWallX){
-            newVx[i] = -newVx[i];
-        }
+      if (newX[i] < leftWallX) {
+        newX[i] = leftWallX;
+        newVx[i] = -newVx[i];
+      }
 
-        if (newX[i] + weights.get(i).getWidth() > rightWallX){
-            newVx[i] = -newVx[i];
-        }
+      if (newX[i] + weights.get(i).getWidth() > rightWallX) {
+        newX[i] = rightWallX - weights.get(i).getWidth();
+        newVx[i] = -newVx[i];
+      }
 
-        if (newY[i] < lowerWallY){
-            newVy[i] = -newVy[i];
-        }
+      if (newY[i] < lowerWallY) {
+        newY[i] = lowerWallY;
+        newVy[i] = -newVy[i];
+      }
 
-        if (newY[i] + weights.get(i).getHeight() > upperWallY){
-            newVy[i] = -newVy[i];
-        }
+      if (newY[i] + weights.get(i).getHeight() > upperWallY) {
+        newY[i] = upperWallY - weights.get(i).getHeight();
+        newVy[i] = -newVy[i];
+      }
     }
 
     for (int i = 0; i < n; i++) {
@@ -323,5 +428,10 @@ public class Physics {
   public void pushFirstWeight(List<Weight> weights, float velocityX, float velocityY) {
     weights.get(0).setVelocityX(weights.get(0).getVelocityX() + velocityX);
     weights.get(0).setVelocityY(weights.get(0).getVelocityY() + velocityY);
+  }
+
+  public void pushWeight(List<Weight> weights, int index, float velocityX, float velocityY) {
+    weights.get(index).setVelocityX(weights.get(index).getVelocityX() + velocityX);
+    weights.get(index).setVelocityY(weights.get(index).getVelocityY() + velocityY);
   }
 }
