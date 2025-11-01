@@ -10,15 +10,15 @@ A model of elastic wave propagation in a chain of masses connected by springs.
 
 #### Radial wave example:
 
-![Radial Animation](/media/radial_wave.gif)
+[![Watch the simulation](media/preview.png)](media/radial_wave.mp4)
 
 #### Linear wave example:
 
-![Linear Animation](/media/linear_wave.gif)
+[![Watch the simulation](media/preview.png)](media/linear_wave.mp4)
 
 #### Multiple radial waves animation:
 
-![Multiple radial waves](/media/multiple_radial_waves.gif)
+[![Watch the simulation](media/preview.png)](media/multiple_radial_waves.mp4)
 
 ---
 
@@ -75,15 +75,15 @@ The equation is solved numerically using the fourth-order Runge–Kutta method.
 
 #### Пример круговой волны:
 
-![Radial Animation](/media/radial_wave.gif)
+[![Watch the simulation](media/preview.png)](media/radial_wave.mp4)
 
 #### Пример линейной волны:
 
-![Linear Animation](/media/linear_wave.gif)
+[![Watch the simulation](media/preview.png)](media/linear_wave.mp4)
 
 #### Пример нескольких радиальных волн:
 
-![Multiple radial waves](/media/multiple_radial_waves.gif)
+[![Watch the simulation](media/preview.png)](media/multiple_radial_waves.mp4)
 
 ---
 
