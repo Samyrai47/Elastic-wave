@@ -272,7 +272,7 @@ public class Physics {
   }
 
   /**
-   * Сложение двух векторов
+   * Складывает два вектора
    *
    * @param vector1 первый вектор
    * @param vector2 второй вектор
@@ -286,7 +286,7 @@ public class Physics {
     return res;
   }
 
-  /** Обрабатываем коллизии грузов при абсолютно упругом ударе */
+  /** Обрабатывает коллизии грузов при абсолютно упругом ударе */
   private static void handleCollisions(List<Weight> weights, float[] state) {
     int n = weights.size();
     float[] newX = new float[n];
@@ -423,13 +423,22 @@ public class Physics {
    * Придает начальное ускорение первому грузу
    *
    * @param weights набор грузов
-   * @param velocityX ускорение, которое нужно придать грузу
+   * @param velocityX ускорение, которое нужно придать грузу по координате X
+   * @param velocityY ускорение, которое нужно придать грузу по координате Y
    */
   public void pushFirstWeight(List<Weight> weights, float velocityX, float velocityY) {
     weights.get(0).setVelocityX(weights.get(0).getVelocityX() + velocityX);
     weights.get(0).setVelocityY(weights.get(0).getVelocityY() + velocityY);
   }
 
+  /**
+   * Придает ускорение выбранному грузу
+   *
+   * @param weights набор грузов
+   * @param index номер груза из списка
+   * @param velocityX ускорение, которое нужно придать грузу по координате X
+   * @param velocityY ускорение, которое нужно придать грузу по координате Y
+   */
   public void pushWeight(List<Weight> weights, int index, float velocityX, float velocityY) {
     weights.get(index).setVelocityX(weights.get(index).getVelocityX() + velocityX);
     weights.get(index).setVelocityY(weights.get(index).getVelocityY() + velocityY);

@@ -64,9 +64,6 @@ public class Main extends ApplicationAdapter {
     float length = 200;
     float width = 50;
     float k = 60;
-    float SpringY = 300;
-    float weightY = 275;
-    float wallHeight = 460;
     float weightHeight = 50;
     float lowerY = 275;
     lowerWallY = lowerY - length;
@@ -220,19 +217,10 @@ public class Main extends ApplicationAdapter {
         logger.logY(weights, simTime);
         logger.logTotalEnergy(weights, springs, simTime);
         logger.logBorderKineticEnergy(weights, WEIGHTS_NUMBER_X, WEIGHTS_NUMBER_Y, simTime);
-        logger.logSideBorderEnergy(weights, WEIGHTS_NUMBER_X, WEIGHTS_NUMBER_Y, simTime);
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
       accumulator -= FIXED_TIME_STEP;
-    }
-
-    if ((int) (simTime * 100) % 100 == 0) {
-      try {
-        logger.logDisplacementField(weights, WEIGHTS_NUMBER_X, WEIGHTS_NUMBER_Y, simTime);
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
     }
 
     // отрисовка стен

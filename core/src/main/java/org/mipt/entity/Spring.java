@@ -122,82 +122,11 @@ public class Spring {
     this.lowerAnchor = lowerAnchor;
   }
 
-  public float getLeftX() {
-    return leftAnchor.x;
-  }
-
   public float getRightX() {
     return rightAnchor.x;
   }
 
-  public float getLeftY() {
-    return leftAnchor.y;
-  }
-
-  public float getRightY() {
-    return rightAnchor.y;
-  }
-
-  public float getUpperX() {
-    return upperAnchor.x;
-  }
-
-  public float getUpperY() {
-    return upperAnchor.y;
-  }
-
-  public float getLowerX() {
-    return lowerAnchor.x;
-  }
-
-  public float getLowerY() {
-    return lowerAnchor.y;
-  }
-
   public float getLength() {
     return length;
-  }
-
-  public float getCurrentLength() {
-    if (rightAnchor != null) {
-      return rightAnchor.cpy().sub(leftAnchor).len();
-    }
-    return upperAnchor.cpy().sub(lowerAnchor).len();
-  }
-
-  public Vector2 getLeftForce() {
-    if (leftAnchor == null) {
-      return new Vector2(0, 0);
-    }
-    Vector2 diffVectors = rightAnchor.cpy().sub(leftAnchor);
-    float currentLength = getCurrentLength();
-    return diffVectors.scl((-k * (currentLength - length)) / currentLength);
-  }
-
-  public Vector2 getRightForce() {
-    if (rightAnchor == null) {
-      return new Vector2(0, 0);
-    }
-    Vector2 diffVectors = leftAnchor.cpy().sub(rightAnchor);
-    float currentLength = getCurrentLength();
-    return diffVectors.scl((-k * (currentLength - length)) / currentLength);
-  }
-
-  public Vector2 getUpperForce() {
-    if (upperAnchor == null) {
-      return new Vector2(0, 0);
-    }
-    Vector2 diffVectors = lowerAnchor.cpy().sub(upperAnchor);
-    float currentLength = getCurrentLength();
-    return diffVectors.scl((-k * (currentLength - length)) / currentLength);
-  }
-
-  public Vector2 getLowerForce() {
-    if (lowerAnchor == null) {
-      return new Vector2(0, 0);
-    }
-    Vector2 diffVectors = upperAnchor.cpy().sub(lowerAnchor);
-    float currentLength = getCurrentLength();
-    return diffVectors.scl((-k * (currentLength - length)) / currentLength);
   }
 }

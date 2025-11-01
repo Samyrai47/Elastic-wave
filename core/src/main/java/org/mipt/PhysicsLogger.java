@@ -14,21 +14,16 @@ public class PhysicsLogger {
   private final FileWriter yWriter;
   private final FileWriter energyWriter;
   private final FileWriter borderWriter;
-  private final FileWriter sideBorderWriter;
-  private final FileWriter fieldWriter;
 
   public PhysicsLogger(String filename, int weightsNumber) throws IOException {
     xWriter = new FileWriter(filename + "_xPos.csv");
     yWriter = new FileWriter(filename + "_yPos.csv");
     borderWriter = new FileWriter(filename + "_border.csv");
-    sideBorderWriter = new FileWriter(filename + "_sides.csv");
     energyWriter = new FileWriter(filename + "_energy.csv");
-    fieldWriter = new FileWriter(filename + "_field.csv");
     xWriter.write("time");
     yWriter.write("time");
     energyWriter.write("time,energy\n");
     borderWriter.write("time,energy\n");
-    sideBorderWriter.write("time,left,right\n");
     for (int i = 0; i < weightsNumber; i++) {
       xWriter.write(",x" + i);
       yWriter.write(",y" + i);
@@ -136,49 +131,10 @@ public class PhysicsLogger {
     borderWriter.write(time + "," + total + "\n");
   }
 
-  public void logSideBorderEnergy(
-      List<Weight> weights, int weightsNumberX, int weightsNumberY, float time) throws IOException {
-    float totalLeft = 0f;
-    float totalRight = 0f;
-    for (int j = 0; j < weightsNumberY; j++) {
-      int leftIdx = j * weightsNumberX;
-      Weight wLeft = weights.get(leftIdx);
-      float vxL = wLeft.getVelocityX();
-      float vyL = wLeft.getVelocityY();
-      totalLeft += 0.5f * wLeft.getMass() * (vxL * vxL + vyL * vyL);
-
-      int rightIdx = j * weightsNumberX + (weightsNumberX - 1);
-      Weight wRight = weights.get(rightIdx);
-      float vxR = wRight.getVelocityX();
-      float vyR = wRight.getVelocityY();
-      totalRight += 0.5f * wRight.getMass() * (vxR * vxR + vyR * vyR);
-    }
-
-    sideBorderWriter.write(time + "," + totalLeft + "," + totalRight + "\n");
-  }
-
-  public void logDisplacementField(
-      List<Weight> weights, int weightsNumberX, int weightsNumberY, float time) throws IOException {
-    fieldWriter.write("# time=" + time + "\n");
-
-    for (int j = 0; j < weightsNumberY; j++) {
-      for (int i = 0; i < weightsNumberX; i++) {
-        int idx = j * weightsNumberX + i;
-        Weight w = weights.get(idx);
-
-        fieldWriter.write(String.valueOf(w.getY()));
-        if (i < weightsNumberX - 1) fieldWriter.write(",");
-      }
-      fieldWriter.write("\n");
-    }
-  }
-
   public void close() throws IOException {
     xWriter.close();
     yWriter.close();
     energyWriter.close();
     borderWriter.close();
-    sideBorderWriter.close();
-    fieldWriter.close();
   }
 }

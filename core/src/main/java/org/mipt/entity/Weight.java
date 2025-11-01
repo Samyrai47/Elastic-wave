@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 /** Класс груза */
 public class Weight {
   /** Масса груза */
-  private float mass;
+  private final float mass;
 
   /** Список пружин, прикрепленных к грузу по x */
   private Spring leftSpring;
@@ -29,15 +29,13 @@ public class Weight {
   private float y;
 
   /** Ширина груза */
-  private float width;
+  private final float width;
 
   /** Высота груза */
   private float height;
 
   /** Скорость */
   private Vector2 velocity;
-
-  private final Vector2 initialPos;
 
   public Weight(float mass, float x, float y, float width, float height) {
     this.mass = mass;
@@ -46,11 +44,6 @@ public class Weight {
     this.width = width;
     this.height = height;
     this.velocity = new Vector2(0, 0);
-    this.initialPos = new Vector2(x, y);
-  }
-
-  public float getDisplacementMagnitude() {
-    return new Vector2(x, y).dst(initialPos);
   }
 
   public void setLeftSpring(Spring leftSpring) {
