@@ -18,27 +18,27 @@ public class Physics {
 
   public Physics() {}
 
-  public void setLeftWallX(float leftWallX) {
+  public static void setLeftWallX(float leftWallX) {
     Physics.leftWallX = leftWallX;
   }
 
-  public void setRightWallX(float rightWallX) {
+  public static void setRightWallX(float rightWallX) {
     Physics.rightWallX = rightWallX;
   }
 
-  public void setUpperWallY(float upperWallY) {
+  public static void setUpperWallY(float upperWallY) {
     Physics.upperWallY = upperWallY;
   }
 
-  public void setLowerWallY(float lowerWallY) {
+  public static void setLowerWallY(float lowerWallY) {
     Physics.lowerWallY = lowerWallY;
   }
 
-  public void setWeightsNumberX(int weightsNumberX) {
+  public static void setWeightsNumberX(int weightsNumberX) {
     Physics.weightsNumberX = weightsNumberX;
   }
 
-  public void setWeightsNumberY(int weightsNumberY) {
+  public static void setWeightsNumberY(int weightsNumberY) {
     Physics.weightsNumberY = weightsNumberY;
   }
 
@@ -138,7 +138,8 @@ public class Physics {
   private static Vector2 accelFromState(int idx, List<Weight> weights, float[] state) {
     final int nx = weightsNumberX;
     final int ny = weightsNumberY;
-    int j = idx / nx, i = idx % nx;
+    int j = idx / nx;
+    int i = idx % nx;
 
     Weight w = weights.get(idx);
     float m = w.getMass();
@@ -222,35 +223,43 @@ public class Physics {
 
   private static Vector2 hooke(Vector2 from, Vector2 to, float k, float restLen) {
     Vector2 d = to.cpy().sub(from);
-    float L = d.len();
-    if (L < EPSILON) return new Vector2();
-    float ext = L - restLen;
-    return d.scl((-k * ext) / L);
+    float len = d.len();
+    if (len < EPSILON) return new Vector2();
+    float ext = len - restLen;
+    return d.scl((-k * ext) / len);
   }
 
   private static Vector2 leftEdgeCenterOf(int i, int j, int nx, List<Weight> w, float[] st) {
-    int idx = j * nx + i, off = idx * 4;
-    float x = st[off], y = st[off + 1];
+    int idx = j * nx + i;
+    int off = idx * 4;
+    float x = st[off];
+    float y = st[off + 1];
     return new Vector2(x, y + w.get(idx).getHeight() / 2f);
   }
 
   private static Vector2 rightEdgeCenterOf(int i, int j, int nx, List<Weight> w, float[] st) {
-    int idx = j * nx + i, off = idx * 4;
-    float x = st[off], y = st[off + 1];
+    int idx = j * nx + i;
+    int off = idx * 4;
+    float x = st[off];
+    float y = st[off + 1];
     Weight wi = w.get(idx);
     return new Vector2(x + wi.getWidth(), y + wi.getHeight() / 2f);
   }
 
   private static Vector2 bottomEdgeCenterOf(int i, int j, int nx, List<Weight> w, float[] st) {
-    int idx = j * nx + i, off = idx * 4;
-    float x = st[off], y = st[off + 1];
+    int idx = j * nx + i;
+    int off = idx * 4;
+    float x = st[off];
+    float y = st[off + 1];
     Weight wi = w.get(idx);
     return new Vector2(x + wi.getWidth() / 2f, y);
   }
 
   private static Vector2 topEdgeCenterOf(int i, int j, int nx, List<Weight> w, float[] st) {
-    int idx = j * nx + i, off = idx * 4;
-    float x = st[off], y = st[off + 1];
+    int idx = j * nx + i;
+    int off = idx * 4;
+    float x = st[off];
+    float y = st[off + 1];
     Weight wi = w.get(idx);
     return new Vector2(x + wi.getWidth() / 2f, y + wi.getHeight());
   }

@@ -25,7 +25,6 @@ public class Main extends ApplicationAdapter {
   private FillViewport viewport;
   private OrthographicCamera camera;
 
-  public static final float PIXELS_PER_METER = 1000.0f;
   private static final float WORLD_HEIGHT = 600;
   private static final float WORLD_WIDTH = 1000;
   private static final float FIXED_TIME_STEP = 0.01f;
@@ -39,6 +38,7 @@ public class Main extends ApplicationAdapter {
 
   /** Границы для стен */
   private float leftWallX;
+
   private float rightWallX;
   private float upperWallY;
   private float lowerWallY;
@@ -71,23 +71,13 @@ public class Main extends ApplicationAdapter {
       float leftX = leftWallX;
       for (int i = 0; i < WEIGHTS_NUMBER_X; i++) {
         Spring horizontalSpring;
-        if (i == 0) {
-          horizontalSpring =
-              new Spring(
-                  k,
-                  new Vector2(leftX, lowerY + weightHeight / 2),
-                  new Vector2(leftX + length, lowerY + weightHeight / 2),
-                  20,
-                  8.0f);
-        } else {
-          horizontalSpring =
-              new Spring(
-                  k,
-                  new Vector2(leftX, lowerY + weightHeight / 2),
-                  new Vector2(leftX + length, lowerY + weightHeight / 2),
-                  20,
-                  8.0f);
-        }
+        horizontalSpring =
+            new Spring(
+                k,
+                new Vector2(leftX, lowerY + weightHeight / 2),
+                new Vector2(leftX + length, lowerY + weightHeight / 2),
+                20,
+                8.0f);
         springs.add(horizontalSpring);
         if (i != 0) {
           weights.get(weights.size() - 1).setRightSpring(horizontalSpring);
@@ -244,7 +234,8 @@ public class Main extends ApplicationAdapter {
     shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 
     for (Spring spring : springs) {
-      Vector2 a = null, b = null;
+      Vector2 a = null;
+      Vector2 b = null;
 
       if (spring.getLeftAnchor() != null && spring.getRightAnchor() != null) {
         a = spring.getLeftAnchor();
@@ -273,17 +264,19 @@ public class Main extends ApplicationAdapter {
 
       float s = MathUtils.clamp(blended * 100f, -1f, 1f);
 
-      float r, g, bl;
+      float red;
+      float green;
+      float blue;
       if (s >= 0) {
-        r = 1f;
-        g = 1f - 0.6f * s;
-        bl = 1f - 0.6f * s;
+        red = 1f;
+        green = 1f - 0.6f * s;
+        blue = 1f - 0.6f * s;
       } else {
-        r = 1f + 0.3f * s;
-        g = 1f + 0.3f * s;
-        bl = 1f - s;
+        red = 1f + 0.3f * s;
+        green = 1f + 0.3f * s;
+        blue = 1f - s;
       }
-      shapeRenderer.setColor(r, g, bl, 1f);
+      shapeRenderer.setColor(red, green, blue, 1f);
 
       for (int i = 0; i < spring.getCoils(); i++) {
         float sign = (i % 2 == 0) ? 1 : -1;
@@ -293,7 +286,8 @@ public class Main extends ApplicationAdapter {
         float x2 = boardAnchor.x + dx * (i + 1);
         float y2 = boardAnchor.y + dy * (i + 1);
 
-        float nx = -dy, ny = dx;
+        float nx = -dy;
+        float ny = dx;
         float len = (float) Math.sqrt(nx * nx + ny * ny);
         nx /= len;
         ny /= len;
@@ -324,28 +318,26 @@ public class Main extends ApplicationAdapter {
     if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
       final int NX = WEIGHTS_NUMBER_X;
       final int NY = WEIGHTS_NUMBER_Y;
-      int i0 = NX / 2, j0 = NY / 2;
+      int i0 = NX / 2;
+      int j0 = NY / 2;
       float v = 400f;
 
       for (int dj = -2; dj <= 2; dj++) {
         for (int di = -2; di <= 2; di++) {
           int i = i0 + di;
           int j = j0 + dj;
-          if (i >= 0 && i < NX && j >= 0 && j < NY) {
-            int idx = j * NX + i;
-            physics.pushWeight(weights, idx, di * v, dj * v);
-          }
+          int idx = j * NX + i;
+          physics.pushWeight(weights, idx, di * v, dj * v);
         }
       }
     }
 
     if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) {
       final int NX = WEIGHTS_NUMBER_X;
-      final int NY = WEIGHTS_NUMBER_Y;
       int i = NX / 2;
       float v = 400f;
 
-      for (int j = 0; j < NY; j++) {
+      for (int j = 0; j < WEIGHTS_NUMBER_Y; j++) {
         int idx = j * NX + i;
         physics.pushWeight(weights, idx, v, 0f);
       }
