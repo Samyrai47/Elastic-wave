@@ -37,7 +37,7 @@ public class PhysicsLogger {
    *
    * @param weights грузы
    * @param time текущий момент времени
-   * @throws IOException
+   * @throws IOException при ошибке записи
    */
   public void logY(List<Weight> weights, float time) throws IOException {
     yWriter.write(Float.toString(time));
@@ -52,7 +52,7 @@ public class PhysicsLogger {
    *
    * @param weights грузы
    * @param time текущий момент времени
-   * @throws IOException
+   * @throws IOException при ошибке записи
    */
   public void logX(List<Weight> weights, float time) throws IOException {
     xWriter.write(Float.toString(time));
@@ -67,7 +67,7 @@ public class PhysicsLogger {
    *
    * @param weights веса
    * @param springs пружины
-   * @throws IOException
+   * @throws IOException при ошибке записи
    */
   public void logTotalEnergy(List<Weight> weights, List<Spring> springs, float time)
       throws IOException {
@@ -82,7 +82,8 @@ public class PhysicsLogger {
 
     // Потенциальная энергия всех пружин
     for (Spring s : springs) {
-      Vector2 a = null, b = null;
+      Vector2 a = null;
+      Vector2 b = null;
       if (s.getLeftAnchor() != null && s.getRightAnchor() != null) {
         a = s.getLeftAnchor();
         b = s.getRightAnchor();
@@ -111,7 +112,7 @@ public class PhysicsLogger {
    * отражение волны у стен.
    *
    * @param weights веса
-   * @throws IOException
+   * @throws IOException при ошибке записи
    */
   public void logBorderKineticEnergy(
       List<Weight> weights, int weightsNumberX, int weightsNumberY, float time) throws IOException {

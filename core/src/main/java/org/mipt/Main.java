@@ -57,8 +57,8 @@ public class Main extends ApplicationAdapter {
       throw new RuntimeException(e);
     }
 
-    physics.setWeightsNumberX(WEIGHTS_NUMBER_X);
-    physics.setWeightsNumberY(WEIGHTS_NUMBER_Y);
+    Physics.setWeightsNumberX(WEIGHTS_NUMBER_X);
+    Physics.setWeightsNumberY(WEIGHTS_NUMBER_Y);
     leftWallX = 200;
     float mass = 1f;
     float length = 200;
@@ -159,10 +159,10 @@ public class Main extends ApplicationAdapter {
       }
     }
 
-    physics.setLeftWallX(leftWallX);
-    physics.setRightWallX(rightWallX);
-    physics.setUpperWallY(upperWallY);
-    physics.setLowerWallY(lowerWallY);
+    Physics.setLeftWallX(leftWallX);
+    Physics.setRightWallX(rightWallX);
+    Physics.setUpperWallY(upperWallY);
+    Physics.setLowerWallY(lowerWallY);
 
     Gdx.input.setInputProcessor(
         new InputAdapter() {
@@ -234,8 +234,8 @@ public class Main extends ApplicationAdapter {
     shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 
     for (Spring spring : springs) {
-      Vector2 a = null;
-      Vector2 b = null;
+      Vector2 a;
+      Vector2 b;
 
       if (spring.getLeftAnchor() != null && spring.getRightAnchor() != null) {
         a = spring.getLeftAnchor();
@@ -316,29 +316,26 @@ public class Main extends ApplicationAdapter {
 
   private void handleInput() {
     if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-      final int NX = WEIGHTS_NUMBER_X;
-      final int NY = WEIGHTS_NUMBER_Y;
-      int i0 = NX / 2;
-      int j0 = NY / 2;
+      int i0 = WEIGHTS_NUMBER_X / 2;
+      int j0 = WEIGHTS_NUMBER_Y / 2;
       float v = 400f;
 
       for (int dj = -2; dj <= 2; dj++) {
         for (int di = -2; di <= 2; di++) {
           int i = i0 + di;
           int j = j0 + dj;
-          int idx = j * NX + i;
+          int idx = j * WEIGHTS_NUMBER_X + i;
           physics.pushWeight(weights, idx, di * v, dj * v);
         }
       }
     }
 
     if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) {
-      final int NX = WEIGHTS_NUMBER_X;
-      int i = NX / 2;
+      int i = WEIGHTS_NUMBER_X / 2;
       float v = 400f;
 
       for (int j = 0; j < WEIGHTS_NUMBER_Y; j++) {
-        int idx = j * NX + i;
+        int idx = j * WEIGHTS_NUMBER_X + i;
         physics.pushWeight(weights, idx, v, 0f);
       }
     }
