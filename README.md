@@ -8,6 +8,18 @@
 
 A model of elastic wave propagation in a chain of masses connected by springs.
 
+#### Radial wave example:
+
+![Radial Animation](/media/radial_wave.gif)
+
+#### Linear wave example:
+
+![Linear Animation](/media/wave.gif)
+
+#### Multiple radial waves animation:
+
+![Multiple radial waves](/media/multiple_radial_waves.gif)
+
 ---
 
 ### Simulation Controls
@@ -59,6 +71,19 @@ The equation is solved numerically using the fourth-order Runge–Kutta method.
 ### Описание
 
 Модель распространения упругой волны в цепочке грузов, соединённых пружинами.
+
+
+#### Пример круговой волны:
+
+![Radial Animation](/media/radial_wave.gif)
+
+#### Пример линейной волны:
+
+![Linear Animation](/media/wave.gif)
+
+#### Пример нескольких радиальных волн:
+
+![Multiple radial waves](/media/multiple_radial_waves.gif)
 
 ---
 
