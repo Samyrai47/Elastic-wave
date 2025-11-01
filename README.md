@@ -79,7 +79,7 @@ The equation is solved numerically using the fourth-order Runge–Kutta method.
 
 #### Пример линейной волны:
 
-![Linear Animation](/media/wave.gif)
+![Linear Animation](/media/linear_wave.gif)
 
 #### Пример нескольких радиальных волн:
 
