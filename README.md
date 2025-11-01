@@ -14,7 +14,7 @@ A model of elastic wave propagation in a chain of masses connected by springs.
 
 #### Linear wave example:
 
-![Linear Animation](/media/wave.gif)
+![Linear Animation](/media/linear_wave.gif)
 
 #### Multiple radial waves animation:
 
