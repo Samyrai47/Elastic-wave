@@ -38,7 +38,6 @@ public class Main extends ApplicationAdapter {
 
   /** Границы для стен */
   private float leftWallX;
-
   private float rightWallX;
   private float upperWallY;
   private float lowerWallY;
