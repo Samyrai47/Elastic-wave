@@ -10,7 +10,7 @@ A model of elastic wave propagation in a chain of masses connected by springs.
 
 #### Radial wave example:
 
-[![Watch the simulation](media/preview.png)](media/radial_wave.mp4)
+[![Watch the video](media/preview.png)](media/radial_wave.mp4>)
 
 #### Linear wave example:
 
